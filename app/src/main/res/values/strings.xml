@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Мой баланс</string>
+    <string name="comment">Комментарий</string>
+    <string name="amount">Сумма</string>
+    <string name="settings_name">Настройки</string>
+    <string name="delete_record">Удалить</string>
+    <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
+    <string name="card_name">Счет</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="transaction">Транзакция</string>
+    <string name="comission">Комиссия</string>
+    <string name="indebtedness">Задолженность</string>
+    <string name="balance">Баланс</string>
+    <string name="calculated_balance">Рассчитанный баланс</string>
+    <string name="label">Метка</string>
+    <string name="details">Подробно</string>
+    <string name="edit">Редактировать</string>
+
+</resources>
