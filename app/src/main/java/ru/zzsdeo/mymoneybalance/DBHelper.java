@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DB_VERSION = 7;
+    private static final int DB_VERSION = 8;
 
     private void updateToV2(SQLiteDatabase db) {
         db.execSQL("alter table mytable add column date integer;");
@@ -92,6 +92,18 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("alter table mytable add column label text;");
     }
 
+    private void updateToV8(SQLiteDatabase db) {
+        db.execSQL("create table scheduler ("
+                + "_id integer primary key autoincrement,"
+                + "card text,"
+                + "datetime integer,"
+                + "paymentdetails text,"
+                + "typeoftransaction text,"
+                + "amount real,"
+                + "calculatedbalance real,"
+                + "label text" + ");");
+    }
+
     public DBHelper(Context context) {
         super(context, "myDB", null, DB_VERSION);
     }
@@ -111,6 +123,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "calculatedbalance real,"
                 + "expenceincome text,"
                 + "label text" + ");");
+        db.execSQL("create table scheduler ("
+                + "_id integer primary key autoincrement,"
+                + "card text,"
+                + "datetime integer,"
+                + "paymentdetails text,"
+                + "typeoftransaction text,"
+                + "amount real,"
+                + "calculatedbalance real,"
+                + "label text" + ");");
     }
 
     @Override
@@ -125,6 +146,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV5(db);
                     updateToV6(db);
                     updateToV7(db);
+                    updateToV8(db);
                     break;
                 case 2:
                     updateToV3(db);
@@ -132,24 +154,32 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV5(db);
                     updateToV6(db);
                     updateToV7(db);
+                    updateToV8(db);
                     break;
                 case 3:
                     updateToV4(db);
                     updateToV5(db);
                     updateToV6(db);
                     updateToV7(db);
+                    updateToV8(db);
                     break;
                 case 4:
                     updateToV5(db);
                     updateToV6(db);
                     updateToV7(db);
+                    updateToV8(db);
                     break;
                 case 5:
                     updateToV6(db);
                     updateToV7(db);
+                    updateToV8(db);
                     break;
                 case 6:
                     updateToV7(db);
+                    updateToV8(db);
+                    break;
+                case 7:
+                    updateToV8(db);
                     break;
             }
 
