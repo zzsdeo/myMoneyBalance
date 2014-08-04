@@ -101,7 +101,6 @@ public class AddDialog extends DialogFragment {
             try {
                 mDateTime = dfm.parse(dateTime).getTime();
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -123,7 +122,6 @@ public class AddDialog extends DialogFragment {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,
                               int dayOfMonth) {
-            // TODO Auto-generated method stub
             today.set(year, monthOfYear, dayOfMonth);
             dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
         }
@@ -132,7 +130,6 @@ public class AddDialog extends DialogFragment {
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // TODO Auto-generated method stub
             today.set(Calendar.HOUR_OF_DAY, hourOfDay);
             today.set(Calendar.MINUTE, minute);
             timeButton.setText(DateFormat.format("HH:mm", today));
@@ -153,7 +150,6 @@ public class AddDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         getDialog().setTitle("Добавить");
         View v = inflater.inflate(R.layout.dialog_add, null);
 //<date
@@ -164,7 +160,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 datePicker.show();
             }
         });
@@ -178,7 +173,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 timePicker.show();
             }
         });
@@ -196,7 +190,6 @@ public class AddDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
-                // TODO Auto-generated method stub
                 switch (position) {
                     case 0:
                         ir.setCard("Cash");
@@ -212,7 +205,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
                 ir.setCard("Cash");
             }
         });
@@ -235,7 +227,6 @@ public class AddDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
-                // TODO Auto-generated method stub
                 switch (position) {
                     case 0:
                         ir.setTypeOfTransaction("Oplata");
@@ -254,7 +245,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
                 ir.setTypeOfTransaction("Oplata");
                 ir.setExpenceIncome("Rashod");
             }
@@ -272,7 +262,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 if (amount.getText().toString().equals("")) {
                     Toast.makeText(getActivity(), "Необходимо ввести сумму!", Toast.LENGTH_LONG).show();
                 } else {
@@ -323,7 +312,6 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 paymentDetails.setText("");
                 amount.setText("");
                 dismiss();
@@ -336,7 +324,6 @@ public class AddDialog extends DialogFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        // TODO Auto-generated method stub
         super.onDismiss(dialog);
         paymentDetails.setText("");
         amount.setText("");
