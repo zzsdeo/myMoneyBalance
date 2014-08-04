@@ -19,14 +19,11 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,11 +34,29 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     private MySimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
     private static final int CM_EDIT_ID = 2;
-    //vars>
+//vars>
+
+//<functions
+    private void myBalance (View v) {
+        TextView cardInfo = (TextView) v.findViewById(R.id.cardInfo);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+        Cursor c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
+        if (c.moveToFirst()) {
+            cardInfo.setText("Наличные: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+        }
+        c = db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime desc, _id desc");
+        if (c.moveToFirst()) {
+            cardInfo.append("Зарплатная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+        }
+        c = db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime desc, _id desc");
+        if (c.moveToFirst()) {
+            cardInfo.append("Кредитная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+        }
+    }
+//functions>
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -91,6 +106,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 }
                 // получаем новый курсор с данными
                 getLoaderManager().getLoader(0).forceLoad();
+                myBalance(getView());
                 return true;
             case CM_EDIT_ID:
                 Log.d("myLogs", "edit "+acmi.id);
@@ -108,7 +124,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenuInfo menuInfo) {
-        // TODO Auto-generated method stub
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, CM_DELETE_ID, 0, R.string.delete_record);
         menu.add(0, CM_EDIT_ID, 1, R.string.edit);
@@ -119,6 +134,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         View v = inflater.inflate(R.layout.fragment_main, parent, false);
         DatabaseManager.initializeInstance(new DBHelper(getActivity()));
         warningText = (TextView) v.findViewById(R.id.warningTextView);
+        myBalance(v);
 
         //<list view
         ListView transactionsListView = (ListView) v.findViewById(R.id.transactionsListView);
@@ -143,7 +159,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // TODO Auto-generated method stub
         return new CursorLoader(getActivity(), null, null, null, null, null) {
             @Override
             public Cursor loadInBackground() {
@@ -158,21 +173,18 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-        // TODO Auto-generated method stub
         scAdapter.swapCursor(arg1);
     }
 
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        // TODO Auto-generated method stub
 
     }
 
 
     @Override
     public void onDestroy() {
-        // TODO Auto-generated method stub
         super.onDestroy();
         DatabaseManager.getInstance().closeDatabase();
     }
@@ -180,7 +192,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
         getLoaderManager().getLoader(0).forceLoad();
         //<warning + start stop service

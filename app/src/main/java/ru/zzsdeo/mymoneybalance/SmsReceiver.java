@@ -21,7 +21,7 @@ public class SmsReceiver extends BroadcastReceiver {
         }
 
         for (SmsMessage msg : sms) {
-            if (msg.getOriginatingAddress().equals("123")) {
+            if (msg.getOriginatingAddress().equals("Telecard")) {
                 Bundle smsBundle = new Bundle();
                 smsBundle.putString("SMS", msg.getMessageBody());
                 smsBundle.putLong("DATE_IN_MILL", msg.getTimestampMillis());
