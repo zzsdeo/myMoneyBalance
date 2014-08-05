@@ -2,8 +2,10 @@ package ru.zzsdeo.mymoneybalance;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -37,13 +39,10 @@ public class MainActivity extends Activity implements
 //tabs>
 
 //<check DB
-        Intent intent = new Intent(this, AlarmManagerReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
+        Intent i = new Intent(this, AlarmManagerService.class);
+        PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 10000, pi);
 //check DB>
 
     }
