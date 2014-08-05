@@ -3,11 +3,13 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -25,17 +27,16 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
+public class SchedulerFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
 //<vars
-    private TextView warningText;
-    private MySimpleCursorAdapter scAdapter;
+    private SchedulerSimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
     private static final int CM_EDIT_ID = 2;
 //vars>
 
 //<functions
-    private void myBalance (View v) {
+    /*private void myBalance (View v) {
         TextView cardInfo = (TextView) v.findViewById(R.id.cardInfo);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
@@ -50,7 +51,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         if (c.moveToFirst()) {
             cardInfo.append("Кредитная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
         }
-    }
+    }*/
 //functions>
 
     @Override
@@ -63,15 +64,15 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_item:
-                DialogFragment addDialog = new AddDialog();
-                addDialog.show(getFragmentManager(), "addDialog");
+                DialogFragment schedulerAddDialog = new ScheduleAddDialog();
+                schedulerAddDialog.show(getFragmentManager(), "schedulerAddDialog");
                 return true;
             default:
                 return false;
         }
     }
 
-    @Override
+    /*@Override
     public boolean onContextItemSelected(MenuItem item) {
         // получаем из пункта контекстного меню данные по пункту списка
         AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -103,7 +104,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                     } while (c.moveToNext());
                 }
                 // получаем новый курсор с данными
-                getLoaderManager().getLoader(0).forceLoad();
+                getLoaderManager().getLoader(1).forceLoad();
                 myBalance(getView());
                 return true;
             case CM_EDIT_ID:
@@ -117,41 +118,37 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             default:
                 return super.onContextItemSelected(item);
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, CM_DELETE_ID, 0, R.string.delete_record);
         menu.add(0, CM_EDIT_ID, 1, R.string.edit);
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_main, parent, false);
-        DatabaseManager.initializeInstance(new DBHelper(getActivity()));
-        warningText = (TextView) v.findViewById(R.id.warningTextView);
-        warningText.setTextColor(Color.RED);
-        myBalance(v);
+        View v = inflater.inflate(R.layout.fragment_scheduler, parent, false);
 
         //<list view
-        ListView transactionsListView = (ListView) v.findViewById(R.id.transactionsListView);
+        ListView schedulerListView = (ListView) v.findViewById(R.id.schedulerListView);
         String[] from = new String[]{"datetime", "paymentdetails", "card", "amount", "calculatedbalance"};
         int[] to = new int[]{R.id.lvDateTime, R.id.lvDetails, R.id.lvCard, R.id.lvAmount, R.id.lvBalance};
-        scAdapter = new MySimpleCursorAdapter(getActivity(), R.layout.list_item, null, from, to, 0);
-        transactionsListView.setAdapter(scAdapter);
-        registerForContextMenu(transactionsListView);
-        getLoaderManager().initLoader(0, null, this);
+        scAdapter = new SchedulerSimpleCursorAdapter(getActivity(), R.layout.list_item, null, from, to, 0);
+        schedulerListView.setAdapter(scAdapter);
+        registerForContextMenu(schedulerListView);
+        getLoaderManager().initLoader(1, null, this);
 
-        transactionsListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        /*schedulerListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra("position", i);
                 startActivity(intent);
             }
-        });
+        });*/
         //list view>
         return v;
     }
@@ -164,7 +161,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 // You better know how to get your database.
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                 // You can use any query that returns a cursor.
-                return db.query("mytable", null, null, null, null, null, "datetime desc, _id desc");
+                return db.query("scheduler", null, null, null, null, null, "datetime asc");
             }
         };
     }
@@ -192,14 +189,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().getLoader(0).forceLoad();
-//<warning
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if (!settings.getBoolean("start_service", true)) {
-            warningText.setText("Перехват SMS от банка отключен");
-        } else {
-            warningText.setText("");
-        }
-//warning>
+        getLoaderManager().getLoader(1).forceLoad();
     }
 }

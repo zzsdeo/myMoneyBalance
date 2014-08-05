@@ -19,14 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light" >
         </activity>
-
         <activity
             android:name=".DetailsActivity"
             android:label="@string/details"
@@ -41,7 +39,17 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".AlarmManagerReceiver"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
 
+        <service
+            android:name=".AlarmManagerService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
