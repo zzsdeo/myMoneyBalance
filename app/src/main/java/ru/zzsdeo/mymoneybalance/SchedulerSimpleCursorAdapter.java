@@ -14,12 +14,10 @@ public class SchedulerSimpleCursorAdapter extends SimpleCursorAdapter {
     public SchedulerSimpleCursorAdapter(Context context, int layout, Cursor c,
                                         String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // TODO Auto-generated method stub
         String card = cursor.getString(cursor.getColumnIndex("card")),
                 details = cursor.getString(cursor.getColumnIndex("paymentdetails")),
                 date = (String) DateFormat.format("dd.MM.yyyy, HH:mm", cursor.getLong(cursor.getColumnIndex("datetime"))),
@@ -40,9 +38,11 @@ public class SchedulerSimpleCursorAdapter extends SimpleCursorAdapter {
         if (card.equals("Cash")) {
             lvCard.setText("Наличные");
         }
-        if (label == "NotConfirmed") {
+        if (label.equals("NotConfirmed")) {
             lvCard.setTextColor(Color.BLUE);
             lvCard.append(" - транзакция не подтверждена!");
+        } else {
+            lvCard.setTextColor(Color.BLACK);
         }
         lvDetails.setText(details);
         lvDateTime.setText(date);

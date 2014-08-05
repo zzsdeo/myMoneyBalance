@@ -279,7 +279,7 @@ public class ScheduleAddDialog extends DialogFragment {
                     db.insert("scheduler", null, cv);
                     //обновление баланса
                     cv.clear();
-                    Cursor c = db.query("scheduler", null, "card = " + '"' + ir.getCard() + '"', null, null, null, "datetime desc, _id desc");
+                    Cursor c = db.query("scheduler", null, "card = " + '"' + ir.getCard() + '"', null, null, null, "datetime asc");
                     if (c.moveToFirst()) {
                         balance = 0;
                         do {

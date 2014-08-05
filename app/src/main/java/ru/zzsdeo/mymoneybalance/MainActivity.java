@@ -37,14 +37,6 @@ public class MainActivity extends Activity implements
         tab.setTabListener(this);
         bar.addTab(tab);
 //tabs>
-
-//<check DB
-        Intent i = new Intent(this, AlarmManagerService.class);
-        PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 10000, pi);
-//check DB>
-
     }
 
     @Override
