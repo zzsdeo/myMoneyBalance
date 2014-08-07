@@ -275,7 +275,7 @@ public class ScheduleAddDialog extends DialogFragment {
                     cv.put("paymentdetails", ir.getPaymentDetails());
                     cv.put("typeoftransaction", ir.getTypeOfTransaction());
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
-                    cv.put("label", "Scheduled");
+                    cv.put("label", "NeedConfirmation");
                     db.insert("scheduler", null, cv);
                     //обновление баланса
                     cv.clear();
