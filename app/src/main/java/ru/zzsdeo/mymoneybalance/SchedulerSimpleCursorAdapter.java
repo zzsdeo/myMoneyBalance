@@ -38,9 +38,13 @@ public class SchedulerSimpleCursorAdapter extends SimpleCursorAdapter {
         if (card.equals("Cash")) {
             lvCard.setText("Наличные");
         }
-        if (label.equals("NotConfirmed")) {
-            lvCard.setTextColor(Color.BLUE);
-            lvCard.append(" - транзакция не подтверждена!");
+        if (label != null) {
+            if (label.equals("NotConfirmed")) {
+                lvCard.setTextColor(Color.BLUE);
+                lvCard.append(" - транзакция не подтверждена!");
+            } else {
+                lvCard.setTextColor(Color.BLACK);
+            }
         } else {
             lvCard.setTextColor(Color.BLACK);
         }

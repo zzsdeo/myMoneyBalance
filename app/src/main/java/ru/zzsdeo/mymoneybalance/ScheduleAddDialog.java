@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -20,8 +21,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -47,6 +52,11 @@ public class ScheduleAddDialog extends DialogFragment {
     private InsertRecord ir = new InsertRecord();
     private double balance, am;
     OnScheduleAddRecordListener scheduleAddRecordListener;
+    private RadioGroup radioGroup;
+    private RadioButton rbEveryDayOfMonth, rbEveryDayOfWeek;
+    private CheckBox repeatedCheckBox, confirmCheckBox;
+    private View llCustom;
+    private static final Long END_OF_TIME = 1419984000000L;
 //vars>
 
 //<classes
@@ -124,6 +134,8 @@ public class ScheduleAddDialog extends DialogFragment {
                               int dayOfMonth) {
             today.set(year, monthOfYear, dayOfMonth);
             dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
+            rbEveryDayOfMonth.setText("Каждое "+ DateFormat.format("dd", today) + " число");
+            rbEveryDayOfWeek.setText("По дням недели (" + DateFormat.format("E", today) + ")");
         }
     };
     OnTimeSetListener callBackTPicker = new OnTimeSetListener() {
@@ -252,6 +264,47 @@ public class ScheduleAddDialog extends DialogFragment {
         //amount.clearFocus();
 //amount>
 
+//<repeat checkbox
+        radioGroup = (RadioGroup) v.findViewById(R.id.radioGroupAddSchedule);
+        radioGroup.setVisibility(View.GONE);
+        repeatedCheckBox = (CheckBox) v.findViewById(R.id.repeatedCheckBox);
+        repeatedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    radioGroup.setVisibility(View.VISIBLE);
+                } else {
+                    radioGroup.setVisibility(View.GONE);
+                }
+            }
+        });
+//repeate checkbox>
+
+//<radio group
+        rbEveryDayOfMonth = (RadioButton) v.findViewById(R.id.rbEveryDayOfMonth);
+        rbEveryDayOfMonth.setText("Каждое "+ DateFormat.format("dd", today) + " число");
+        rbEveryDayOfMonth.setChecked(true);
+        rbEveryDayOfWeek = (RadioButton) v.findViewById(R.id.rbEveryDayOfWeek);
+        rbEveryDayOfWeek.setText("По дням недели (" + DateFormat.format("E", today) + ")");
+        llCustom = v.findViewById(R.id.llCustom);
+        llCustom.setVisibility(View.INVISIBLE);
+        confirmCheckBox = (CheckBox) v.findViewById(R.id.confirmCheckBox);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rbCustom:
+                        llCustom.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        llCustom.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+//radio group>
+
+
 //<save button
         Button saveButton = (Button) v.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -271,14 +324,59 @@ public class ScheduleAddDialog extends DialogFragment {
                     SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                     ContentValues cv = new ContentValues();
                     cv.put("card", ir.getCard());
-                    cv.put("datetime", ir.getDateTime());
                     cv.put("paymentdetails", ir.getPaymentDetails());
                     cv.put("typeoftransaction", ir.getTypeOfTransaction());
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
-                    cv.put("label", "NeedConfirmation");
-                    db.insert("scheduler", null, cv);
+                    if (repeatedCheckBox.isChecked()) {
+                        if (confirmCheckBox.isChecked()) {
+                            cv.put("label", "NeedConfirmation");
+                        }
+                        int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                        switch (checkedRadioButtonId) {
+                            case R.id.rbEveryDayOfMonth:
+                                do {
+                                    cv.put("datetime", today.getTimeInMillis());
+                                    db.insert("scheduler", null, cv);
+                                    today.add(Calendar.MONTH, 1);
+                                    Log.d("myLogs", "Дата "+Long.toString(today.getTimeInMillis()));
+                                    Log.d("myLogs", "Текущщаяя дата "+Long.toString(ir.getDateTime()));
+                                } while (END_OF_TIME > today.getTimeInMillis());
+                                break;
+                            case R.id.rbLastDayOfMonth:
+                                do {
+                                    today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
+                                    cv.put("datetime", today.getTimeInMillis());
+                                    db.insert("scheduler", null, cv);
+                                    today.add(Calendar.MONTH, 1);
+                                } while (END_OF_TIME > today.getTimeInMillis());
+                                break;
+                            case R.id.rbEveryDay:
+                                /*do {
+                                    cv.put("datetime", today.getTimeInMillis());
+                                    db.insert("scheduler", null, cv);
+                                    today.add(Calendar.DAY_OF_MONTH, 1);
+                                } while (END_OF_TIME > today.getTimeInMillis());*/
+                                Bundle args = new Bundle();
+                                args.putString("card", ir.getCard());
+                                args.putString("paymentdetails", ir.getPaymentDetails());
+                                args.putString("typeoftransaction", ir.getTypeOfTransaction());
+                                args.putDouble("amount", Round.roundedDouble(ir.getAmount()));
+                                args.putLong("datetime", today.getTimeInMillis());
+                                if (confirmCheckBox.isChecked()) {
+                                    args.putString("label", "NeedConfirmation");
+                                }
+                                Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                                getActivity().startService(i.putExtras(args));
+                                break;
+                        }
+                    } else {
+                        cv.put("datetime", ir.getDateTime());
+                        cv.put("label", "NeedConfirmation");
+                        db.insert("scheduler", null, cv);
+                        //TODO реализовать обновление
+                    }
                     //обновление баланса
-                    cv.clear();
+                    /*cv.clear();
                     Cursor c = db.query("scheduler", null, "card = " + '"' + ir.getCard() + '"', null, null, null, "datetime asc");
                     if (c.moveToFirst()) {
                         balance = 0;
@@ -290,11 +388,11 @@ public class ScheduleAddDialog extends DialogFragment {
                             db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                             cv.clear();
                         } while (c.moveToNext());
-                    }
+                    }*/
                     paymentDetails.setText("");
                     amount.setText("");
                     //обновление listview
-                    scheduleAddRecordListener.scheduleRecordAdded();
+                    //scheduleAddRecordListener.scheduleRecordAdded();
                     dismiss();
                 }
             }

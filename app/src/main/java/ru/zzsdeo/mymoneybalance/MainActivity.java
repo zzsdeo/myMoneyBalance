@@ -5,9 +5,12 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,6 +19,8 @@ public class MainActivity extends Activity implements
         EditDialog.OnEditRecordListener,
         ScheduleAddDialog.OnScheduleAddRecordListener,
         ActionBar.TabListener {
+
+    BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,28 @@ public class MainActivity extends Activity implements
         tab.setTabListener(this);
         bar.addTab(tab);
 //tabs>
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String s = intent.getStringExtra("message");
+                if (s.equals("refresh")) {
+                    getFragmentManager().beginTransaction().replace(android.R.id.content, new SchedulerFragment(), "schedulerFragment").commit();
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver), new IntentFilter(UpdateDBIntentService.UPDATE_RESULT));
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onStop();
     }
 
     @Override

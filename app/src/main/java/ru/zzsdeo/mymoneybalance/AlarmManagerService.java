@@ -27,14 +27,16 @@ public class AlarmManagerService extends Service {
         cv.put("label", "NotConfirmed");
         if (c.moveToFirst()) {
             do {
-                if (c.getString(c.getColumnIndex("label")).equals("NeedConfirmation")) {
-                    Log.d("myLogs", "Подтверждение " + c.getString(c.getColumnIndex("paymentdetails")));
-                    db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                String label = c.getString(c.getColumnIndex("label"));
+                if (label != null) {
+                    if (label.equals("NeedConfirmation")) {
+                        Log.d("myLogs", "Подтверждение " + c.getString(c.getColumnIndex("paymentdetails")));
+                        db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                    }
                 }
             } while (c.moveToNext());
         }
-        c = db.query("scheduler", null, "datetime <  " + '"' + System.currentTimeMillis() + '"' + "and label != 'NotConfirmed'", null, null, null, null);
-        //TODO label = 'Scheduled'
+        c = db.query("scheduler", null, "datetime <  " + '"' + System.currentTimeMillis() + '"' + "and label is not 'NotConfirmed'", null, null, null, null);
         if (c.moveToFirst()) {
             do {
                 Log.d("myLogs", "Удаление " + c.getString(c.getColumnIndex("paymentdetails")));

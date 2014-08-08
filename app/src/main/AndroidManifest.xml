@@ -57,6 +57,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".UpdateDBIntentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
