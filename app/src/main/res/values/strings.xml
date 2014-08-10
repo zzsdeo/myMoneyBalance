@@ -29,6 +29,7 @@
     <string name="custom_repeat">Задать период повторений</string>
     <string name="repeat_every">Повторять каждый</string>
     <string name="day">день</string>
-
+    <string name="delete_all">Удалить все транзакции серии</string>
+    <string name="delete_this">Удалить только выбранную транзакцию</string>
 
 </resources>

@@ -72,61 +72,51 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         }
     }
 
-    /*@Override
+    @Override
     public boolean onContextItemSelected(MenuItem item) {
+        Bundle args;
         // получаем из пункта контекстного меню данные по пункту списка
         AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
+        args = new Bundle();
+        args.putLong("id", acmi.id);
         switch (item.getItemId()) {
             case CM_DELETE_ID:
                 // извлекаем id записи и удаляем соответствующую запись в БД
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-                Cursor c = db.query("mytable", null, "_id = " + acmi.id, null, null, null, null);
+                Cursor c = db.query("scheduler", null, "_id = " + acmi.id, null, null, null, null);
                 c.moveToFirst();
                 String card = c.getString(c.getColumnIndex("card"));
-                db.delete("mytable", "_id = " + acmi.id, null);
-                //обновляем баланс
-                ContentValues cv = new ContentValues();
-                c = db.query("mytable", null, "card = " + '"' + card + '"', null, null, null, "datetime asc");
-                if (c.moveToFirst()) {
-                    double balance = 0;
-                    do {
-                        double am;
-                        if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
-                            am = -c.getDouble(c.getColumnIndex("amount"));
-                        } else {
-                            am = c.getDouble(c.getColumnIndex("amount"));
-                        }
-                        balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
-                        Log.d("myLogs", "Удаление " + Double.toString(balance));
-                        cv.put("calculatedbalance", Round.roundedDouble(balance));
-                        db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
-                        cv.clear();
-                    } while (c.moveToNext());
+                args.putString("card", card);
+                if (c.getInt(c.getColumnIndex("hash")) == 0) {
+                    db.delete("scheduler", "_id = " + acmi.id, null);
+                } else {
+                    DialogFragment schedulerDeleteDialog = new ScheduleDeleteDialog();
+                    schedulerDeleteDialog.setArguments(args);
+                    schedulerDeleteDialog.show(getFragmentManager(), "schedulerDeleteDialog");
                 }
-                // получаем новый курсор с данными
-                getLoaderManager().getLoader(1).forceLoad();
-                myBalance(getView());
+                //обновляем баланс
+                args.putString("db", "scheduleronlyrecalculate");
+                Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                getActivity().startService(i.putExtras(args));
                 return true;
-            case CM_EDIT_ID:
+            /*case CM_EDIT_ID:
                 Log.d("myLogs", "edit "+acmi.id);
-                Bundle args = new Bundle();
-                args.putLong("id", acmi.id);
                 DialogFragment editDialog = new EditDialog();
                 editDialog.setArguments(args);
                 editDialog.show(getFragmentManager(), "editDialog");
-                return true;
+                return true;*/
             default:
                 return super.onContextItemSelected(item);
         }
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, CM_DELETE_ID, 0, R.string.delete_record);
         menu.add(0, CM_EDIT_ID, 1, R.string.edit);
-    }*/
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {

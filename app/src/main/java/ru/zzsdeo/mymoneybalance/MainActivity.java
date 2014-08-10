@@ -2,9 +2,7 @@ package ru.zzsdeo.mymoneybalance;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity implements
-        AddDialog.OnAddRecordListener,
-        EditDialog.OnEditRecordListener,
-        ScheduleAddDialog.OnScheduleAddRecordListener,
-        ActionBar.TabListener {
+public class MainActivity extends Activity implements ActionBar.TabListener {
 
     BroadcastReceiver receiver;
 
@@ -46,9 +40,12 @@ public class MainActivity extends Activity implements
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String s = intent.getStringExtra("message");
-                if (s.equals("refresh")) {
-                    getFragmentManager().beginTransaction().replace(android.R.id.content, new SchedulerFragment(), "schedulerFragment").commit();
+                if (intent.getStringExtra("db").equals("scheduler") && getFragmentManager().findFragmentByTag("schedulerFragment") != null) {
+                    getFragmentManager().findFragmentByTag("schedulerFragment").getLoaderManager().getLoader(1).forceLoad();
+                }
+                if (intent.getStringExtra("db").equals("mytable") && getFragmentManager().findFragmentByTag("mainFragment") != null) {
+                    getFragmentManager().findFragmentByTag("mainFragment").getLoaderManager().getLoader(0).forceLoad();
+                    MainFragment.myBalance(getFragmentManager().findFragmentByTag("mainFragment").getView());
                 }
             }
         };
@@ -82,21 +79,6 @@ public class MainActivity extends Activity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void recordAdded() {
-       getFragmentManager().beginTransaction().replace(android.R.id.content, new MainFragment(), "mainFragment").commit();
-    }
-
-    @Override
-    public void recordEdited() {
-       getFragmentManager().beginTransaction().replace(android.R.id.content, new MainFragment(), "mainFragment").commit();
-    }
-
-    @Override
-    public void scheduleRecordAdded() {
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new SchedulerFragment(), "schedulerFragment").commit();
     }
 
     @Override

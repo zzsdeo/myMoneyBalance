@@ -1,14 +1,13 @@
 package ru.zzsdeo.mymoneybalance;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -42,17 +41,12 @@ public class EditDialog extends DialogFragment {
     private String[] nameOfCard = {"Наличные", "Зарплатная", "Кредитная"};
     private String[] typeOfTransaction = {"Оплата", "Зачисление", "Снятие наличных"};
     private InsertRecord ir = new InsertRecord();
-    private double balance, am, amnt;
-    OnEditRecordListener editRecordListener;
+    private double amnt;
     private long id;
     private String card, comment, expenceincome;
 //vars>
 
 //<classes
-    public interface OnEditRecordListener {
-        public void recordEdited();
-    }
-
     private class InsertRecord {
 
         private String mCard, mPaymentDetails, mTypeOfTransaction, mExpenceIncome;
@@ -100,7 +94,6 @@ public class EditDialog extends DialogFragment {
             try {
                 mDateTime = dfm.parse(dateTime).getTime();
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -122,7 +115,6 @@ public class EditDialog extends DialogFragment {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,
                               int dayOfMonth) {
-            // TODO Auto-generated method stub
             today.set(year, monthOfYear, dayOfMonth);
             dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
         }
@@ -131,24 +123,12 @@ public class EditDialog extends DialogFragment {
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // TODO Auto-generated method stub
             today.set(Calendar.HOUR_OF_DAY, hourOfDay);
             today.set(Calendar.MINUTE, minute);
             timeButton.setText(DateFormat.format("HH:mm", today));
         }
     };
 //functions>
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            editRecordListener = (OnEditRecordListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnAddRecordListener");
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,7 +151,6 @@ public class EditDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         getDialog().setTitle("Редактировать");
         View v = inflater.inflate(R.layout.dialog_edit, null);
 //<date
@@ -182,7 +161,6 @@ public class EditDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 datePicker.show();
             }
         });
@@ -196,7 +174,6 @@ public class EditDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 timePicker.show();
             }
         });
@@ -222,7 +199,6 @@ public class EditDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
-                // TODO Auto-generated method stub
                 switch (position) {
                     case 0:
                         ir.setCard("Cash");
@@ -273,7 +249,6 @@ public class EditDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
-                // TODO Auto-generated method stub
                 switch (position) {
                     case 0:
                         ir.setTypeOfTransaction("Oplata");
@@ -315,7 +290,6 @@ public class EditDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 if (amount.getText().toString().equals("")) {
                     Toast.makeText(getActivity(), "Необходимо ввести сумму!", Toast.LENGTH_LONG).show();
                 } else {
@@ -333,27 +307,13 @@ public class EditDialog extends DialogFragment {
                     cv.put("label", "Manual");
                     db.update("mytable", cv, "_id = " + id, null);
                     //обновление баланса
-                    cv.clear();
-                    Cursor c = db.query("mytable", null, "card = " + '"' + ir.getCard() + '"', null, null, null, "datetime asc");
-                    if (c.moveToFirst()) {
-                        balance = 0;
-                        do {
-                            if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
-                                am = -c.getDouble(c.getColumnIndex("amount"));
-                            } else {
-                                am = c.getDouble(c.getColumnIndex("amount"));
-                            }
-                            balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
-                            Log.d("myLogs", Double.toString(balance));
-                            cv.put("calculatedbalance", Round.roundedDouble(balance));
-                            db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
-                            cv.clear();
-                        } while (c.moveToNext());
-                    }
+                    Bundle args = new Bundle();
+                    args.putString("db", "mytable");
+                    args.putString("card", ir.getCard());
+                    Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                    getActivity().startService(i.putExtras(args));
                     paymentDetails.setText("");
                     amount.setText("");
-                    //обновление listview
-                    editRecordListener.recordEdited();
                     dismiss();
                 }
             }
@@ -366,7 +326,6 @@ public class EditDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 paymentDetails.setText("");
                 amount.setText("");
                 Log.d("myLogs", "args "+id);
@@ -380,7 +339,6 @@ public class EditDialog extends DialogFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        // TODO Auto-generated method stub
         super.onDismiss(dialog);
         paymentDetails.setText("");
         amount.setText("");

@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText"
+                android:id="@+id/tvCustom"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp" />
 

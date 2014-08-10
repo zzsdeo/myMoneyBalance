@@ -61,7 +61,6 @@ public class CursorPagerAdapter<F extends Fragment> extends FragmentStatePagerAd
     @Override
     public CharSequence getPageTitle(int position) {
         cursor.moveToPosition(position);
-        CharSequence date = DateFormat.format("dd.MM.yyyy, HH:mm", cursor.getLong(cursor.getColumnIndex("datetime")));
-        return date;
+        return DateFormat.format("dd.MM.yyyy, HH:mm", cursor.getLong(cursor.getColumnIndex("datetime")));
     }
 }

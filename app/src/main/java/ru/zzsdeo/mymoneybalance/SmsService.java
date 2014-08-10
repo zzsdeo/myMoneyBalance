@@ -68,26 +68,32 @@ public class SmsService extends Service {
             }
             cv.put("label", "Auto");
             cv.put("datetime", dateInMill);
-            db.insert("mytable", null, cv);
-            //обновляем баланс
-            cv.clear();
-            Cursor c = db.query("mytable", null, "card = " + '"' + card + '"', null, null, null, "datetime asc");
-            if (c.moveToFirst()) {
-                double balance = 0;
-                do {
-                    if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
-                        amount = -c.getDouble(c.getColumnIndex("amount"));
-                    } else {
-                        amount = c.getDouble(c.getColumnIndex("amount"));
-                    }
-                    Log.d("myLogs", "Из SMS balance " + Double.toString(balance));
-                    balance = balance + amount - c.getDouble(c.getColumnIndex("comission"));
-                    Log.d("myLogs", "Из SMS amount " + Double.toString(amount));
-                    Log.d("myLogs", "Из SMS " + Double.toString(balance));
-                    cv.put("calculatedbalance", Round.roundedDouble(balance));
-                    db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
-                    cv.clear();
-                } while (c.moveToNext());
+            db.beginTransaction();
+            try {
+                db.insert("mytable", null, cv);
+                //обновляем баланс
+                cv.clear();
+                Cursor c = db.query("mytable", null, "card = " + '"' + card + '"', null, null, null, "datetime asc");
+                if (c.moveToFirst()) {
+                    double balance = 0;
+                    do {
+                        if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
+                            amount = -c.getDouble(c.getColumnIndex("amount"));
+                        } else {
+                            amount = c.getDouble(c.getColumnIndex("amount"));
+                        }
+                        Log.d("myLogs", "Из SMS balance " + Double.toString(balance));
+                        balance = balance + amount - c.getDouble(c.getColumnIndex("comission"));
+                        Log.d("myLogs", "Из SMS amount " + Double.toString(amount));
+                        Log.d("myLogs", "Из SMS " + Double.toString(balance));
+                        cv.put("calculatedbalance", Round.roundedDouble(balance));
+                        db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                        cv.clear();
+                    } while (c.moveToNext());
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
             }
             DatabaseManager.getInstance().closeDatabase();
         }

@@ -35,7 +35,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 //vars>
 
 //<functions
-    private void myBalance (View v) {
+    static void myBalance (View v) {
         TextView cardInfo = (TextView) v.findViewById(R.id.cardInfo);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
@@ -73,6 +73,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        Bundle args;
         // получаем из пункта контекстного меню данные по пункту списка
         AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
@@ -84,31 +85,15 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 String card = c.getString(c.getColumnIndex("card"));
                 db.delete("mytable", "_id = " + acmi.id, null);
                 //обновляем баланс
-                ContentValues cv = new ContentValues();
-                c = db.query("mytable", null, "card = " + '"' + card + '"', null, null, null, "datetime asc");
-                if (c.moveToFirst()) {
-                    double balance = 0;
-                    do {
-                        double am;
-                        if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
-                            am = -c.getDouble(c.getColumnIndex("amount"));
-                        } else {
-                            am = c.getDouble(c.getColumnIndex("amount"));
-                        }
-                        balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
-                        Log.d("myLogs", "Удаление " + Double.toString(balance));
-                        cv.put("calculatedbalance", Round.roundedDouble(balance));
-                        db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
-                        cv.clear();
-                    } while (c.moveToNext());
-                }
-                // получаем новый курсор с данными
-                getLoaderManager().getLoader(0).forceLoad();
-                myBalance(getView());
+                args = new Bundle();
+                args.putString("db", "mytable");
+                args.putString("card", card);
+                Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                getActivity().startService(i.putExtras(args));
                 return true;
             case CM_EDIT_ID:
                 Log.d("myLogs", "edit "+acmi.id);
-                Bundle args = new Bundle();
+                args = new Bundle();
                 args.putLong("id", acmi.id);
                 DialogFragment editDialog = new EditDialog();
                 editDialog.setArguments(args);

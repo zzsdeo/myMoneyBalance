@@ -15,7 +15,7 @@ public class UpdateDBIntentService extends IntentService {
     LocalBroadcastManager broadcaster = LocalBroadcastManager.getInstance(this);
     private static final Long END_OF_TIME = 1419984000000L;
     private Calendar today = Calendar.getInstance();
-    static final public String UPDATE_RESULT = "ru.zzsdeo.mymoneybalance.updatedbintentservice.OK";
+    public static final String UPDATE_RESULT = "ru.zzsdeo.mymoneybalance.updatedbintentservice.OK";
 
     public UpdateDBIntentService() {
         super("UpdateDBIntentService");
@@ -23,35 +23,161 @@ public class UpdateDBIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        today.setTimeInMillis(intent.getLongExtra("datetime", today.getTimeInMillis()));
+        Intent i = new Intent(UPDATE_RESULT);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("card", intent.getStringExtra("card"));
-        cv.put("paymentdetails", intent.getStringExtra("paymentdetails"));
-        cv.put("typeoftransaction", intent.getStringExtra("typeoftransaction"));
-        cv.put("amount", intent.getDoubleExtra("amount", 0));
-        cv.put("label", intent.getStringExtra("label"));
-        do {
-            cv.put("datetime", today.getTimeInMillis());
-            db.insert("scheduler", null, cv);
-            today.add(Calendar.DAY_OF_MONTH, 1);
-        } while (END_OF_TIME > today.getTimeInMillis());
-        cv.clear();
-        Cursor c = db.query("scheduler", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
-        if (c.moveToFirst()) {
-            double balance = 0;
-            do {
-                double am = c.getDouble(c.getColumnIndex("amount"));
-                balance = balance + am;
-                Log.d("myLogs", Double.toString(balance));
-                cv.put("calculatedbalance", Round.roundedDouble(balance));
-                db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+        double balance, am;
+        if (intent.getStringExtra("db").equals("scheduler")) {
+            i.putExtra("db", "scheduler");
+            today.setTimeInMillis(intent.getLongExtra("datetime", today.getTimeInMillis()));
+            cv.put("card", intent.getStringExtra("card"));
+            cv.put("paymentdetails", intent.getStringExtra("paymentdetails"));
+            cv.put("typeoftransaction", intent.getStringExtra("typeoftransaction"));
+            cv.put("amount", intent.getDoubleExtra("amount", 0));
+            cv.put("label", intent.getStringExtra("label"));
+            cv.put("hash", intent.getIntExtra("hash", 0));
+            db.beginTransaction();
+            try {
+                switch (intent.getIntExtra("rbPos", 0)) {
+                    case 0:
+                        cv.put("datetime", today.getTimeInMillis());
+                        db.insert("scheduler", null, cv);
+                        break;
+                    case 1:
+                        do {
+                            cv.put("datetime", today.getTimeInMillis());
+                            db.insert("scheduler", null, cv);
+                            today.add(Calendar.MONTH, 1);
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
+                    case 2:
+                        do {
+                            today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
+                            cv.put("datetime", today.getTimeInMillis());
+                            db.insert("scheduler", null, cv);
+                            today.add(Calendar.MONTH, 1);
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
+                    case 3:
+                        do {
+                            cv.put("datetime", today.getTimeInMillis());
+                            db.insert("scheduler", null, cv);
+                            today.add(Calendar.DAY_OF_MONTH, 1);
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
+                    case 4:
+                        do {
+                            if (today.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && today.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                                cv.put("datetime", today.getTimeInMillis());
+                                db.insert("scheduler", null, cv);
+                            }
+                            today.add(Calendar.DAY_OF_WEEK, 1);
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
+                    case 5:
+                        do {
+                            cv.put("datetime", today.getTimeInMillis());
+                            db.insert("scheduler", null, cv);
+                            today.add(Calendar.DAY_OF_MONTH, 7);
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
+                    case 6:
+                        do {
+                            cv.put("datetime", today.getTimeInMillis());
+                            db.insert("scheduler", null, cv);
+                            today.add(Calendar.DAY_OF_MONTH, Integer.parseInt(intent.getStringExtra("custom")));
+                        } while (END_OF_TIME > today.getTimeInMillis());
+                }
                 cv.clear();
-            } while (c.moveToNext());
+                Cursor c = db.query("scheduler", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
+                if (c.moveToFirst()) {
+                    balance = 0;
+                    do {
+                        am = c.getDouble(c.getColumnIndex("amount"));
+                        balance = balance + am;
+                        Log.d("myLogs", Double.toString(balance));
+                        cv.put("calculatedbalance", Round.roundedDouble(balance));
+                        db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                        cv.clear();
+                    } while (c.moveToNext());
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
         }
-        Intent i = new Intent(UPDATE_RESULT);
-        i.putExtra("message", "refresh");
-        broadcaster.sendBroadcast(i);
 
+        if (intent.getStringExtra("db").equals("mytable")) {
+            i.putExtra("db", "mytable");
+            Cursor c = db.query("mytable", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
+            db.beginTransaction();
+            try {
+                if (c.moveToFirst()) {
+                    balance = 0;
+                    do {
+                        if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
+                            am = -c.getDouble(c.getColumnIndex("amount"));
+                        } else {
+                            am = c.getDouble(c.getColumnIndex("amount"));
+                        }
+                        balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
+                        Log.d("myLogs", Double.toString(balance));
+                        cv.put("calculatedbalance", Round.roundedDouble(balance));
+                        db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                        cv.clear();
+                    } while (c.moveToNext());
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
+
+        if (intent.getStringExtra("db").equals("scheduleronlyrecalculate")) {
+            i.putExtra("db", "scheduler");
+            Cursor c = db.query("scheduler", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
+            db.beginTransaction();
+            try {
+                if (c.moveToFirst()) {
+                    balance = 0;
+                    do {
+                        am = c.getDouble(c.getColumnIndex("amount"));
+                        balance = balance + am;
+                        Log.d("myLogs", Double.toString(balance));
+                        cv.put("calculatedbalance", Round.roundedDouble(balance));
+                        db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                        cv.clear();
+                    } while (c.moveToNext());
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
+
+        if (intent.getStringExtra("db").equals("schedulerdelete")) {
+            i.putExtra("db", "scheduler");
+            Cursor c = db.query("scheduler", null, "_id = " + '"' + intent.getLongExtra("id", 0) + '"', null, null, null, "datetime asc");
+            db.beginTransaction();
+            try {
+                if (c.moveToFirst()) {
+                    switch (intent.getIntExtra("rbDeletePos", 2)) {
+                        case 1:
+                            int hash = c.getInt(c.getColumnIndex("hash"));
+                            db.delete("scheduler", "hash = " + '"' + hash + '"', null);
+                            break;
+                        case 2:
+                            db.delete("scheduler", "_id = " + '"' + intent.getLongExtra("id", 0) + '"', null);
+                            break;
+                    }
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
+
+        DatabaseManager.getInstance().closeDatabase();
+        broadcaster.sendBroadcast(i);
     }
 }

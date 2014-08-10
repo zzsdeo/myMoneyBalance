@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -45,15 +46,9 @@ public class AddDialog extends DialogFragment {
     private String[] nameOfCard = {"Наличные", "Зарплатная", "Кредитная"};
     private String[] typeOfTransaction = {"Оплата", "Зачисление", "Снятие наличных"};
     private InsertRecord ir = new InsertRecord();
-    private double balance, am;
-    OnAddRecordListener addRecordListener;
 //vars>
 
 //<classes
-    public interface OnAddRecordListener {
-        public void recordAdded();
-    }
-
     private class InsertRecord {
 
         private String mCard, mPaymentDetails, mTypeOfTransaction, mExpenceIncome;
@@ -136,17 +131,6 @@ public class AddDialog extends DialogFragment {
         }
     };
 //functions>
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            addRecordListener = (OnAddRecordListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnAddRecordListener");
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -279,27 +263,13 @@ public class AddDialog extends DialogFragment {
                     cv.put("label", "Manual");
                     db.insert("mytable", null, cv);
                     //обновление баланса
-                    cv.clear();
-                    Cursor c = db.query("mytable", null, "card = " + '"' + ir.getCard() + '"', null, null, null, "datetime asc");
-                    if (c.moveToFirst()) {
-                        balance = 0;
-                        do {
-                            if (c.getString(c.getColumnIndex("expenceincome")).equals("Rashod")) {
-                                am = -c.getDouble(c.getColumnIndex("amount"));
-                            } else {
-                                am = c.getDouble(c.getColumnIndex("amount"));
-                            }
-                            balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
-                            Log.d("myLogs", Double.toString(balance));
-                            cv.put("calculatedbalance", Round.roundedDouble(balance));
-                            db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
-                            cv.clear();
-                        } while (c.moveToNext());
-                    }
+                    Bundle args = new Bundle();
+                    args.putString("db", "mytable");
+                    args.putString("card", ir.getCard());
+                    Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                    getActivity().startService(i.putExtras(args));
                     paymentDetails.setText("");
                     amount.setText("");
-                    //обновление listview
-                    addRecordListener.recordAdded();
                     dismiss();
                 }
             }
