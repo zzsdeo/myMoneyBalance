@@ -91,7 +91,13 @@ public class UpdateDBIntentService extends IntentService {
                 cv.clear();
                 Cursor c = db.query("scheduler", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
                 if (c.moveToFirst()) {
-                    balance = 0;
+                    Cursor b = db.query("mytable", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "_id desc");
+                    if (b.moveToFirst()) {
+                        balance = b.getDouble(b.getColumnIndex("calculatedbalance"));
+                        Log.d("myLogs", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+Double.toString(balance));
+                    } else {
+                        balance = 0;
+                    }
                     do {
                         am = c.getDouble(c.getColumnIndex("amount"));
                         balance = balance + am;
@@ -139,7 +145,12 @@ public class UpdateDBIntentService extends IntentService {
             db.beginTransaction();
             try {
                 if (c.moveToFirst()) {
-                    balance = 0;
+                    Cursor b = db.query("mytable", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "_id desc");
+                    if (b.moveToFirst()) {
+                        balance = b.getDouble(b.getColumnIndex("calculatedbalance"));
+                    } else {
+                        balance = 0;
+                    }
                     do {
                         am = c.getDouble(c.getColumnIndex("amount"));
                         balance = balance + am;

@@ -268,6 +268,10 @@ public class AddDialog extends DialogFragment {
                     args.putString("card", ir.getCard());
                     Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
                     getActivity().startService(i.putExtras(args));
+                    //обновление баланса на запланированных транзакциях
+                    args.putString("db", "scheduleronlyrecalculate");
+                    getActivity().startService(i.putExtras(args));
+                    //очистка формы
                     paymentDetails.setText("");
                     amount.setText("");
                     dismiss();
