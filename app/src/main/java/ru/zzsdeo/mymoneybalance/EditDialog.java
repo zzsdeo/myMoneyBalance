@@ -312,6 +312,8 @@ public class EditDialog extends DialogFragment {
                     args.putString("card", ir.getCard());
                     Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
                     getActivity().startService(i.putExtras(args));
+                    args.putString("db", "scheduleronlyrecalculate");
+                    getActivity().startService(i.putExtras(args));
                     paymentDetails.setText("");
                     amount.setText("");
                     dismiss();

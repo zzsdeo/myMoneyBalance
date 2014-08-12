@@ -90,6 +90,8 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 args.putString("card", card);
                 Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
                 getActivity().startService(i.putExtras(args));
+                args.putString("db", "scheduleronlyrecalculate");
+                getActivity().startService(i.putExtras(args));
                 return true;
             case CM_EDIT_ID:
                 Log.d("myLogs", "edit "+acmi.id);

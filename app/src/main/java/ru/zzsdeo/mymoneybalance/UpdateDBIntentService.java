@@ -94,7 +94,6 @@ public class UpdateDBIntentService extends IntentService {
                     Cursor b = db.query("mytable", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "_id desc");
                     if (b.moveToFirst()) {
                         balance = b.getDouble(b.getColumnIndex("calculatedbalance"));
-                        Log.d("myLogs", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+Double.toString(balance));
                     } else {
                         balance = 0;
                     }
@@ -188,7 +187,41 @@ public class UpdateDBIntentService extends IntentService {
             }
         }
 
+        if (intent.getStringExtra("db").equals("recalculateallscheduler")) {
+            i.putExtra("db", "scheduler");
+
+        }
+
         DatabaseManager.getInstance().closeDatabase();
         broadcaster.sendBroadcast(i);
+    }
+
+    private void recalculateAllScheduler (String card) {
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+        ContentValues cv = new ContentValues();
+        Cursor c = db.query("scheduler", null, "card = " + '"' + card + '"', null, null, null, "datetime asc");
+        db.beginTransaction();
+        try {
+            if (c.moveToFirst()) {
+                Cursor b = db.query("mytable", null, "card = " + '"' + card + '"', null, null, null, "_id desc");
+                double balance, am;
+                if (b.moveToFirst()) {
+                    balance = b.getDouble(b.getColumnIndex("calculatedbalance"));
+                } else {
+                    balance = 0;
+                }
+                do {
+                    am = c.getDouble(c.getColumnIndex("amount"));
+                    balance = balance + am;
+                    Log.d("myLogs", Double.toString(balance));
+                    cv.put("calculatedbalance", Round.roundedDouble(balance));
+                    db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                    cv.clear();
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 }

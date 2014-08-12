@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -96,6 +97,13 @@ public class SmsService extends Service {
                 db.endTransaction();
             }
             DatabaseManager.getInstance().closeDatabase();
+            //обновление баланса запланированных транзакций
+            Bundle args = new Bundle();
+            args.putString("db", "scheduleronlyrecalculate");
+            args.putString("card", card);
+            Intent i = new Intent(SmsService.this, UpdateDBIntentService.class);
+            i.putExtras(args);
+            startService(i);
         }
         return START_STICKY;
     }
