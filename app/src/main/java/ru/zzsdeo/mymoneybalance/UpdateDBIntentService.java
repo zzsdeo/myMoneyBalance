@@ -12,7 +12,6 @@ import java.util.Calendar;
 
 public class UpdateDBIntentService extends IntentService {
 
-    LocalBroadcastManager broadcaster = LocalBroadcastManager.getInstance(this);
     private static final Long END_OF_TIME = 1419984000000L;
     private Calendar today = Calendar.getInstance();
     public static final String UPDATE_RESULT = "ru.zzsdeo.mymoneybalance.updatedbintentservice.OK";
@@ -23,6 +22,7 @@ public class UpdateDBIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        LocalBroadcastManager broadcaster = LocalBroadcastManager.getInstance(this);
         Intent i = new Intent(UPDATE_RESULT);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         ContentValues cv = new ContentValues();
@@ -189,7 +189,9 @@ public class UpdateDBIntentService extends IntentService {
 
         if (intent.getStringExtra("db").equals("recalculateallscheduler")) {
             i.putExtra("db", "scheduler");
-
+            recalculateAllScheduler("Cash");
+            recalculateAllScheduler("Card2485");
+            recalculateAllScheduler("Card0115");
         }
 
         DatabaseManager.getInstance().closeDatabase();
