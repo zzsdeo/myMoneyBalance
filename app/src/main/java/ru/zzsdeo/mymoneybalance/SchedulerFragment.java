@@ -79,32 +79,37 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
         args = new Bundle();
         args.putLong("id", acmi.id);
+        // извлекаем id записи и удаляем соответствующую запись в БД
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+        Cursor c = db.query("scheduler", null, "_id = " + acmi.id, null, null, null, null);
+        c.moveToFirst();
+        String card = c.getString(c.getColumnIndex("card"));
+        args.putString("card", card);
+        args.putString("db", "scheduleronlyrecalculate");
+        Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
         switch (item.getItemId()) {
             case CM_DELETE_ID:
-                // извлекаем id записи и удаляем соответствующую запись в БД
-                SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-                Cursor c = db.query("scheduler", null, "_id = " + acmi.id, null, null, null, null);
-                c.moveToFirst();
-                String card = c.getString(c.getColumnIndex("card"));
-                args.putString("card", card);
-                if (c.getInt(c.getColumnIndex("hash")) == 0) {
+                if (c.getInt(c.getColumnIndex("repeat")) == 0) {
                     db.delete("scheduler", "_id = " + acmi.id, null);
+                    //обновляем баланс
+                    getActivity().startService(i.putExtras(args));
                 } else {
                     DialogFragment schedulerDeleteDialog = new ScheduleDeleteDialog();
                     schedulerDeleteDialog.setArguments(args);
                     schedulerDeleteDialog.show(getFragmentManager(), "schedulerDeleteDialog");
                 }
-                //обновляем баланс
-                args.putString("db", "scheduleronlyrecalculate");
-                Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
-                getActivity().startService(i.putExtras(args));
                 return true;
-            /*case CM_EDIT_ID:
-                Log.d("myLogs", "edit "+acmi.id);
-                DialogFragment editDialog = new EditDialog();
-                editDialog.setArguments(args);
-                editDialog.show(getFragmentManager(), "editDialog");
-                return true;*/
+            case CM_EDIT_ID:
+                if (c.getInt(c.getColumnIndex("repeat")) == 0) {
+                    DialogFragment scheduleEditThisDialog = new ScheduleEditThisDialog();
+                    scheduleEditThisDialog.setArguments(args);
+                    scheduleEditThisDialog.show(getFragmentManager(), "scheduleEditThisDialog");
+                } else {
+                    DialogFragment scheduleEditSelectionDialog = new ScheduleEditSelectionDialog();
+                    scheduleEditSelectionDialog.setArguments(args);
+                    scheduleEditSelectionDialog.show(getFragmentManager(), "scheduleEditSelectionDialog");
+                }
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -131,14 +136,21 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         registerForContextMenu(schedulerListView);
         getLoaderManager().initLoader(1, null, this);
 
-        /*schedulerListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        schedulerListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("position", i);
-                startActivity(intent);
+                Bundle args = new Bundle();
+                args.putLong("id", l);
+                SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+                Cursor c = db.query("scheduler", null, "_id = " + l, null, null, null, null);
+                c.moveToFirst();
+                if (c.getString(c.getColumnIndex("label")) != null) {
+                    DialogFragment scheduleConfirmSelectionDialog = new ScheduleConfirmSelectionDialog();
+                    scheduleConfirmSelectionDialog.setArguments(args);
+                    scheduleConfirmSelectionDialog.show(getFragmentManager(), "scheduleConfirmSelectionDialog");
+                }
             }
-        });*/
+        });
         //list view>
         return v;
     }

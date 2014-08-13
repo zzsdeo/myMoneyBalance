@@ -12,7 +12,7 @@ import java.util.Calendar;
 
 public class UpdateDBIntentService extends IntentService {
 
-    private static final Long END_OF_TIME = 1419984000000L;
+    private static final Long END_OF_TIME = 1451520000000L;
     private Calendar today = Calendar.getInstance();
     public static final String UPDATE_RESULT = "ru.zzsdeo.mymoneybalance.updatedbintentservice.OK";
 
@@ -40,10 +40,12 @@ public class UpdateDBIntentService extends IntentService {
             try {
                 switch (intent.getIntExtra("rbPos", 0)) {
                     case 0:
+                        cv.put("repeat", 0);
                         cv.put("datetime", today.getTimeInMillis());
                         db.insert("scheduler", null, cv);
                         break;
                     case 1:
+                        cv.put("repeat", 1);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
                             db.insert("scheduler", null, cv);
@@ -51,6 +53,7 @@ public class UpdateDBIntentService extends IntentService {
                         } while (END_OF_TIME > today.getTimeInMillis());
                         break;
                     case 2:
+                        cv.put("repeat", 2);
                         do {
                             today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
                             cv.put("datetime", today.getTimeInMillis());
@@ -59,6 +62,7 @@ public class UpdateDBIntentService extends IntentService {
                         } while (END_OF_TIME > today.getTimeInMillis());
                         break;
                     case 3:
+                        cv.put("repeat", 3);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
                             db.insert("scheduler", null, cv);
@@ -66,6 +70,7 @@ public class UpdateDBIntentService extends IntentService {
                         } while (END_OF_TIME > today.getTimeInMillis());
                         break;
                     case 4:
+                        cv.put("repeat", 4);
                         do {
                             if (today.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && today.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
                                 cv.put("datetime", today.getTimeInMillis());
@@ -75,6 +80,7 @@ public class UpdateDBIntentService extends IntentService {
                         } while (END_OF_TIME > today.getTimeInMillis());
                         break;
                     case 5:
+                        cv.put("repeat", 5);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
                             db.insert("scheduler", null, cv);
@@ -82,6 +88,8 @@ public class UpdateDBIntentService extends IntentService {
                         } while (END_OF_TIME > today.getTimeInMillis());
                         break;
                     case 6:
+                        cv.put("repeat", 6);
+                        cv.put("customrepeatvalue", Integer.parseInt(intent.getStringExtra("custom")));
                         do {
                             cv.put("datetime", today.getTimeInMillis());
                             db.insert("scheduler", null, cv);
@@ -192,6 +200,10 @@ public class UpdateDBIntentService extends IntentService {
             recalculateAllScheduler("Cash");
             recalculateAllScheduler("Card2485");
             recalculateAllScheduler("Card0115");
+        }
+
+        if (intent.getStringExtra("db").equals("updatemainfragment")) {
+            i.putExtra("db", "mytable");
         }
 
         DatabaseManager.getInstance().closeDatabase();

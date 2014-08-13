@@ -103,11 +103,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        if (tab.getText().equals("История")) {
-            fragmentTransaction.add(android.R.id.content, new MainFragment(), "mainFragment");
-        }
-        if (tab.getText().equals("Планирование")) {
-            fragmentTransaction.add(android.R.id.content, new SchedulerFragment(), "schedulerFragment");
-        }
+
     }
 }

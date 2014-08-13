@@ -97,13 +97,20 @@ public class SmsService extends Service {
                 db.endTransaction();
             }
             DatabaseManager.getInstance().closeDatabase();
-            //обновление баланса запланированных транзакций
+
+            //обновление listview в MainFragment
             Bundle args = new Bundle();
-            args.putString("db", "scheduleronlyrecalculate");
-            args.putString("card", card);
             Intent i = new Intent(SmsService.this, UpdateDBIntentService.class);
+            args.putString("db", "updatemainfragment");
             i.putExtras(args);
             startService(i);
+
+            //обновление баланса запланированных транзакций
+            args.putString("db", "scheduleronlyrecalculate");
+            args.putString("card", card);
+            i.putExtras(args);
+            startService(i);
+
         }
         return START_STICKY;
     }

@@ -11,8 +11,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-
-public class ScheduleDeleteDialog extends DialogFragment {
+public class ScheduleEditSelectionDialog extends DialogFragment {
 
 //<vars
     private RadioGroup radioGroup;
@@ -22,13 +21,15 @@ public class ScheduleDeleteDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().setTitle("Удалить");
-        View v = inflater.inflate(R.layout.dialog_delete_schedule, null);
+        getDialog().setTitle("Редактировать");
+        View v = inflater.inflate(R.layout.dialog_selection_edit_schedule, null);
+        args = new Bundle();
+        args.putLong("id", getArguments().getLong("id"));
 
 //<radio group
-        radioGroup = (RadioGroup) v.findViewById(R.id.radioGroupDeleteSchedule);
-        RadioButton rbDeleteAll = (RadioButton) v.findViewById(R.id.rbDeleteAll);
-        rbDeleteAll.setChecked(true);
+        radioGroup = (RadioGroup) v.findViewById(R.id.radioGroupEditSchedule);
+        RadioButton rbEditAll = (RadioButton) v.findViewById(R.id.rbEditAll);
+        rbEditAll.setChecked(true);
 //radio group>
 
 
@@ -38,20 +39,19 @@ public class ScheduleDeleteDialog extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                args = new Bundle();
-                args.putString("db", "schedulerdelete");
-                args.putLong("id", getArguments().getLong("id"));
                 int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
                 switch (checkedRadioButtonId) {
-                    case R.id.rbDeleteAll:
-                        args.putInt("rbDeletePos", 1);
+                    case R.id.rbEditAll:
+                        DialogFragment scheduleEditAllDialog = new ScheduleEditAllDialog();
+                        scheduleEditAllDialog.setArguments(args);
+                        scheduleEditAllDialog.show(getFragmentManager(), "scheduleEditAllDialog");
                         break;
-                    case R.id.rbDeleteThis:
-                        args.putInt("rbDeletePos", 2);
+                    case R.id.rbEditThis:
+                        DialogFragment scheduleEditThisDialog = new ScheduleEditThisDialog();
+                        scheduleEditThisDialog.setArguments(args);
+                        scheduleEditThisDialog.show(getFragmentManager(), "scheduleEditThisDialog");
                         break;
                 }
-                Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
-                getActivity().startService(i.putExtras(args));
                 dismiss();
             }
         });
