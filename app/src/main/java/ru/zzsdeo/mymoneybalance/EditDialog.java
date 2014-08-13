@@ -259,7 +259,7 @@ public class EditDialog extends DialogFragment {
                         ir.setExpenceIncome("Dohod");
                         break;
                     case 2:
-                        ir.setTypeOfTransaction("Nalichnie");
+                        ir.setTypeOfTransaction("Snyatie nalichnih");
                         ir.setExpenceIncome("Rashod");
                         break;
                 }

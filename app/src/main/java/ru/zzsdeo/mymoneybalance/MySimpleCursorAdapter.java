@@ -32,21 +32,23 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
                 lvDateTime = (TextView) view.findViewById(R.id.lvDateTime),
                 lvAmount = (TextView) view.findViewById(R.id.lvAmount),
                 lvBalance = (TextView) view.findViewById(R.id.lvBalance);
-        if (balance!=0&balance!=cBalance) {
+        if (balance!=0 && balance!=cBalance) {
             lvCard.setTextColor(Color.RED);
+        } else {
+            lvCard.setTextColor(Color.BLACK);
         }
-        if (card.equals("Card2485")) {
+        if (card!=null && card.equals("Card2485")) {
             lvCard.setText("Зарплатная");
         }
-        if (card.equals("Card0115")) {
+        if (card!=null && card.equals("Card0115")) {
             lvCard.setText("Кредитная");
         }
-        if (card.equals("Cash")) {
+        if (card!=null && card.equals("Cash")) {
             lvCard.setText("Наличные");
         }
         lvDetails.setText(details);
         lvDateTime.setText(date);
-        if (expenceIncome.equals("Rashod")) {
+        if (expenceIncome!=null && expenceIncome.equals("Rashod")) {
             lvAmount.setTextColor(Color.RED);
             lvAmount.setText("-" + Double.toString(amount));
         } else {

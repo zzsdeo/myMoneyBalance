@@ -29,13 +29,13 @@ public class SchedulerSimpleCursorAdapter extends SimpleCursorAdapter {
                 lvDateTime = (TextView) view.findViewById(R.id.lvDateTime),
                 lvAmount = (TextView) view.findViewById(R.id.lvAmount),
                 lvBalance = (TextView) view.findViewById(R.id.lvBalance);
-        if (card.equals("Card2485")) {
+        if (card!=null && card.equals("Card2485")) {
             lvCard.setText("Зарплатная");
         }
-        if (card.equals("Card0115")) {
+        if (card!=null && card.equals("Card0115")) {
             lvCard.setText("Кредитная");
         }
-        if (card.equals("Cash")) {
+        if (card!=null && card.equals("Cash")) {
             lvCard.setText("Наличные");
         }
         if (label != null) {

@@ -221,7 +221,7 @@ public class AddDialog extends DialogFragment {
                         ir.setExpenceIncome("Dohod");
                         break;
                     case 2:
-                        ir.setTypeOfTransaction("Nalichnie");
+                        ir.setTypeOfTransaction("Snyatie nalichnih");
                         ir.setExpenceIncome("Rashod");
                         break;
                 }
