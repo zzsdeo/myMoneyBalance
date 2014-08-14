@@ -425,6 +425,12 @@ public class ScheduleEditAllDialog extends DialogFragment {
                         db.delete("scheduler", "hash = " + '"' + hash + '"', null);
                         Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
                         getActivity().startService(i.putExtras(args));
+                        //обновление всех карт если изменен счет
+                        if (!card.equals(ir.getCard())) {
+                            args.putString("db", "recalculateallscheduler");
+                            getActivity().startService(i.putExtras(args));
+                        }
+                        //очистка формы
                         paymentDetails.setText("");
                         amount.setText("");
                         tvCustom.setText("");

@@ -303,9 +303,14 @@ public class ScheduleEditThisDialog extends DialogFragment {
                     //обновление баланса
                     Bundle args = new Bundle();
                     args.putString("card", ir.getCard());
-                    args.putString("db", "scheduleronlyrecalculate");
+                    if (card.equals(ir.getCard())) {
+                        args.putString("db", "scheduleronlyrecalculate");
+                    } else {
+                        args.putString("db", "recalculateallscheduler");
+                    }
                     Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
                     getActivity().startService(i.putExtras(args));
+                    //очистка формы
                     paymentDetails.setText("");
                     amount.setText("");
                     dismiss();
