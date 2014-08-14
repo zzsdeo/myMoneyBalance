@@ -1,6 +1,5 @@
 package ru.zzsdeo.mymoneybalance;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.DialogFragment;
@@ -31,21 +30,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class AddDialog extends DialogFragment {
+public class ScheduleEditThisDialog extends DialogFragment {
 
     //<vars
     private EditText paymentDetails, amount;
     private Button dateButton;
     private Button timeButton;
     private Calendar today = Calendar.getInstance();
-    private int d = today.get(Calendar.DATE),
-            m = today.get(Calendar.MONTH),
-            y = today.get(Calendar.YEAR),
-            h = today.get(Calendar.HOUR_OF_DAY),
-            mi = today.get(Calendar.MINUTE);
+    private int d, m, y, h, mi;
     private String[] nameOfCard = {"Наличные", "Зарплатная", "Кредитная"};
-    private String[] typeOfTransaction = {"Оплата", "Зачисление", "Снятие наличных"};
+    private String[] typeOfTransaction = {"Оплата", "Зачисление"};
     private InsertRecord ir = new InsertRecord();
+    private double amnt;
+    private long id;
+    private String card, comment, type;
 //vars>
 
 //<classes
@@ -132,10 +130,29 @@ public class AddDialog extends DialogFragment {
     };
 //functions>
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        id = getArguments().getLong("id");
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+        Cursor c = db.query("scheduler", null, "_id = " + id, null, null, null, null);
+        c.moveToFirst();
+        today.setTimeInMillis(c.getLong(c.getColumnIndex("datetime")));
+        d = today.get(Calendar.DATE);
+        m = today.get(Calendar.MONTH);
+        y = today.get(Calendar.YEAR);
+        h = today.get(Calendar.HOUR_OF_DAY);
+        mi = today.get(Calendar.MINUTE);
+        card = c.getString(c.getColumnIndex("card"));
+        comment = c.getString(c.getColumnIndex("paymentdetails"));
+        type = c.getString(c.getColumnIndex("typeoftransaction"));
+        amnt = c.getDouble(c.getColumnIndex("amount"));
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().setTitle("Добавить");
-        View v = inflater.inflate(R.layout.dialog_add, null);
+        getDialog().setTitle("Редактировать");
+        View v = inflater.inflate(R.layout.dialog_edit, null);
 //<date
         dateButton = (Button) v.findViewById(R.id.dateButton);
         dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
@@ -168,7 +185,15 @@ public class AddDialog extends DialogFragment {
         Spinner cardSpinner = (Spinner) v.findViewById(R.id.cardSpinner);
         cardSpinner.setAdapter(cardAdapter);
         cardSpinner.setPrompt("Счет");
-        cardSpinner.setSelection(0);
+        if (card.equals("Cash")) {
+            cardSpinner.setSelection(0);
+        }
+        if (card.equals("Card2485")) {
+            cardSpinner.setSelection(1);
+        }
+        if (card.equals("Card0115")) {
+            cardSpinner.setSelection(2);
+        }
         cardSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             @Override
@@ -189,13 +214,22 @@ public class AddDialog extends DialogFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                ir.setCard("Cash");
+                if (card.equals("Cash")) {
+                    ir.setCard("Cash");
+                }
+                if (card.equals("Card2485")) {
+                    ir.setCard("Card2485");
+                }
+                if (card.equals("Card0115")) {
+                    ir.setCard("Card0115");
+                }
             }
         });
 //card>
 
 //<comment
         paymentDetails = (EditText) v.findViewById(R.id.editPaymentDetails);
+        paymentDetails.setText(comment);
         //paymentDetails.clearFocus();
 //comment>
 
@@ -205,7 +239,11 @@ public class AddDialog extends DialogFragment {
         Spinner typeSpinner = (Spinner) v.findViewById(R.id.typeSpinner);
         typeSpinner.setAdapter(typeOfTransactionAdapter);
         typeSpinner.setPrompt("Транзакция");
-        typeSpinner.setSelection(0);
+        if (type.equals("Oplata")) {
+            typeSpinner.setSelection(0);
+        } else {
+            typeSpinner.setSelection(1);
+        }
         typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             @Override
@@ -214,29 +252,27 @@ public class AddDialog extends DialogFragment {
                 switch (position) {
                     case 0:
                         ir.setTypeOfTransaction("Oplata");
-                        ir.setExpenceIncome("Rashod");
                         break;
                     case 1:
                         ir.setTypeOfTransaction("Zachislenie");
-                        ir.setExpenceIncome("Dohod");
-                        break;
-                    case 2:
-                        ir.setTypeOfTransaction("Snyatie nalichnih");
-                        ir.setExpenceIncome("Rashod");
                         break;
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                ir.setTypeOfTransaction("Oplata");
-                ir.setExpenceIncome("Rashod");
+                if (type.equals("Oplata")) {
+                    ir.setTypeOfTransaction("Oplata");
+                } else {
+                    ir.setTypeOfTransaction("Zachislenie");
+                }
             }
         });
 //type of transaction>
 
 //<amount
         amount = (EditText) v.findViewById(R.id.editAmount);
+        amount.setText(Double.toString(Math.abs(amnt)));
         //amount.clearFocus();
 //amount>
 
@@ -251,7 +287,11 @@ public class AddDialog extends DialogFragment {
                 } else {
                     ir.setDateTime(dateButton.getText().toString() + "_" + timeButton.getText().toString());
                     ir.setPaymentDetails(paymentDetails.getText().toString());
-                    ir.setAmount(Double.parseDouble(amount.getText().toString().trim()));
+                    if (ir.getTypeOfTransaction().equals("Oplata")) {
+                        ir.setAmount(-Double.parseDouble(amount.getText().toString().trim()));
+                    } else {
+                        ir.setAmount(Double.parseDouble(amount.getText().toString().trim()));
+                    }
                     SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                     ContentValues cv = new ContentValues();
                     cv.put("card", ir.getCard());
@@ -259,17 +299,16 @@ public class AddDialog extends DialogFragment {
                     cv.put("paymentdetails", ir.getPaymentDetails());
                     cv.put("typeoftransaction", ir.getTypeOfTransaction());
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
-                    cv.put("expenceincome", ir.getExpenceIncome());
-                    cv.put("label", "Manual");
-                    db.insert("mytable", null, cv);
+                    db.update("scheduler", cv, "_id = " + id, null);
                     //обновление баланса
                     Bundle args = new Bundle();
-                    args.putString("db", "mytable");
                     args.putString("card", ir.getCard());
+                    if (card.equals(ir.getCard())) {
+                        args.putString("db", "scheduleronlyrecalculate");
+                    } else {
+                        args.putString("db", "recalculateallscheduler");
+                    }
                     Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
-                    getActivity().startService(i.putExtras(args));
-                    //обновление баланса на запланированных транзакциях
-                    args.putString("db", "scheduleronlyrecalculate");
                     getActivity().startService(i.putExtras(args));
                     //очистка формы
                     paymentDetails.setText("");

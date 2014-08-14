@@ -19,5 +19,22 @@
     <string name="label">Метка</string>
     <string name="details">Подробно</string>
     <string name="edit">Редактировать</string>
+    <string name="repeated_transaction">Повторяющаяся транзакция</string>
+    <string name="need_confirmation">Требовать подтверждения транзакции</string>
+    <string name="every">Каждое 21 число</string>
+    <string name="last_day_of_month">Каждый последний день месяца</string>
+    <string name="every_day">Каждый день</string>
+    <string name="every_working_day">Каждый будний день</string>
+    <string name="every_week">Каждый понедельник</string>
+    <string name="custom_repeat">Задать период повторений</string>
+    <string name="repeat_every">Повторять каждый</string>
+    <string name="day">день</string>
+    <string name="delete_all">Удалить все транзакции серии</string>
+    <string name="delete_this">Удалить только выбранную транзакцию</string>
+    <string name="edit_all">Редактировать все транзакции серии</string>
+    <string name="edit_this">Редактировать только выбранную транзакцию</string>
+    <string name="confirm_transaction">Подтвердить транзакцию</string>
+    <string name="confirm_history">Подтвердить и добавить в историю</string>
+    <string name="confirm">Подтвердить</string>
 
 </resources>

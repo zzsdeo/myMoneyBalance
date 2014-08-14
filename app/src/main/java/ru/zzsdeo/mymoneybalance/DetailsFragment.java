@@ -89,12 +89,12 @@ public class DetailsFragment extends Fragment {
         TextView tvLabel = (TextView)view.findViewById(R.id.labelDetails);
         tvLabel.setText(label);
 
-        if (balance!=null&calculatedbalance!=null) {
+        if (balance!=null && calculatedbalance!=null) {
             difference = Double.parseDouble(balance) - Double.parseDouble(calculatedbalance);
         }
         TextView tvDifference = (TextView) view.findViewById(R.id.balanceWarning);
         if (difference!=0) {
-            tvDifference.setText("Баланс отличается от рассчитанного на "+difference);
+            tvDifference.setText("Баланс отличается от рассчитанного на " + Round.roundedDouble(difference));
         }
 
         return view;

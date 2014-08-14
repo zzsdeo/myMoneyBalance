@@ -1,19 +1,14 @@
 package ru.zzsdeo.mymoneybalance;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +16,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -31,10 +30,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class AddDialog extends DialogFragment {
+public class ScheduleAddDialog extends DialogFragment {
 
     //<vars
-    private EditText paymentDetails, amount;
+    private EditText paymentDetails, amount, tvCustom;
     private Button dateButton;
     private Button timeButton;
     private Calendar today = Calendar.getInstance();
@@ -44,11 +43,16 @@ public class AddDialog extends DialogFragment {
             h = today.get(Calendar.HOUR_OF_DAY),
             mi = today.get(Calendar.MINUTE);
     private String[] nameOfCard = {"Наличные", "Зарплатная", "Кредитная"};
-    private String[] typeOfTransaction = {"Оплата", "Зачисление", "Снятие наличных"};
+    private String[] typeOfTransaction = {"Оплата", "Зачисление"};
     private InsertRecord ir = new InsertRecord();
+    private RadioGroup radioGroup;
+    private RadioButton rbEveryDayOfMonth, rbEveryDayOfWeek;
+    private CheckBox repeatedCheckBox, confirmCheckBox;
+    private View llCustom;
+    private Bundle args;
 //vars>
 
-//<classes
+    //<classes
     private class InsertRecord {
 
         private String mCard, mPaymentDetails, mTypeOfTransaction, mExpenceIncome;
@@ -119,6 +123,8 @@ public class AddDialog extends DialogFragment {
                               int dayOfMonth) {
             today.set(year, monthOfYear, dayOfMonth);
             dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
+            rbEveryDayOfMonth.setText("Каждое " + DateFormat.format("dd", today) + " число");
+            rbEveryDayOfWeek.setText("По дням недели (" + DateFormat.format("E", today) + ")");
         }
     };
     OnTimeSetListener callBackTPicker = new OnTimeSetListener() {
@@ -130,12 +136,13 @@ public class AddDialog extends DialogFragment {
             timeButton.setText(DateFormat.format("HH:mm", today));
         }
     };
-//functions>
+
+    //functions>
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().setTitle("Добавить");
-        View v = inflater.inflate(R.layout.dialog_add, null);
+        View v = inflater.inflate(R.layout.dialog_add_schedule, null);
 //<date
         dateButton = (Button) v.findViewById(R.id.dateButton);
         dateButton.setText(DateFormat.format("dd.MM.yyyy", today));
@@ -220,10 +227,6 @@ public class AddDialog extends DialogFragment {
                         ir.setTypeOfTransaction("Zachislenie");
                         ir.setExpenceIncome("Dohod");
                         break;
-                    case 2:
-                        ir.setTypeOfTransaction("Snyatie nalichnih");
-                        ir.setExpenceIncome("Rashod");
-                        break;
                 }
             }
 
@@ -240,6 +243,49 @@ public class AddDialog extends DialogFragment {
         //amount.clearFocus();
 //amount>
 
+//<repeat checkbox
+        radioGroup = (RadioGroup) v.findViewById(R.id.radioGroupAddSchedule);
+        radioGroup.setVisibility(View.GONE);
+        repeatedCheckBox = (CheckBox) v.findViewById(R.id.repeatedCheckBox);
+        repeatedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    radioGroup.setVisibility(View.VISIBLE);
+                } else {
+                    radioGroup.setVisibility(View.GONE);
+                }
+            }
+        });
+//repeate checkbox>
+
+//<radio group
+        rbEveryDayOfMonth = (RadioButton) v.findViewById(R.id.rbEveryDayOfMonth);
+        rbEveryDayOfMonth.setText("Каждое " + DateFormat.format("dd", today) + " число");
+        rbEveryDayOfMonth.setChecked(true);
+        rbEveryDayOfWeek = (RadioButton) v.findViewById(R.id.rbEveryDayOfWeek);
+        rbEveryDayOfWeek.setText("По дням недели (" + DateFormat.format("E", today) + ")");
+        llCustom = v.findViewById(R.id.llCustom);
+        llCustom.setVisibility(View.INVISIBLE);
+        confirmCheckBox = (CheckBox) v.findViewById(R.id.confirmCheckBox);
+        tvCustom = (EditText) v.findViewById(R.id.tvCustom);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rbCustom:
+                        llCustom.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        tvCustom.setText("");
+                        llCustom.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+//radio group>
+
+
 //<save button
         Button saveButton = (Button) v.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -249,32 +295,68 @@ public class AddDialog extends DialogFragment {
                 if (amount.getText().toString().equals("")) {
                     Toast.makeText(getActivity(), "Необходимо ввести сумму!", Toast.LENGTH_LONG).show();
                 } else {
+                    boolean flag = true;
                     ir.setDateTime(dateButton.getText().toString() + "_" + timeButton.getText().toString());
                     ir.setPaymentDetails(paymentDetails.getText().toString());
-                    ir.setAmount(Double.parseDouble(amount.getText().toString().trim()));
-                    SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-                    ContentValues cv = new ContentValues();
-                    cv.put("card", ir.getCard());
-                    cv.put("datetime", ir.getDateTime());
-                    cv.put("paymentdetails", ir.getPaymentDetails());
-                    cv.put("typeoftransaction", ir.getTypeOfTransaction());
-                    cv.put("amount", Round.roundedDouble(ir.getAmount()));
-                    cv.put("expenceincome", ir.getExpenceIncome());
-                    cv.put("label", "Manual");
-                    db.insert("mytable", null, cv);
-                    //обновление баланса
-                    Bundle args = new Bundle();
-                    args.putString("db", "mytable");
+                    if (ir.getExpenceIncome().equals("Rashod")) {
+                        ir.setAmount(-Double.parseDouble(amount.getText().toString().trim()));
+                    } else {
+                        ir.setAmount(Double.parseDouble(amount.getText().toString().trim()));
+                    }
+                    args = new Bundle();
+                    args.putString("db", "scheduler");
                     args.putString("card", ir.getCard());
-                    Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
-                    getActivity().startService(i.putExtras(args));
-                    //обновление баланса на запланированных транзакциях
-                    args.putString("db", "scheduleronlyrecalculate");
-                    getActivity().startService(i.putExtras(args));
-                    //очистка формы
-                    paymentDetails.setText("");
-                    amount.setText("");
-                    dismiss();
+                    args.putString("paymentdetails", ir.getPaymentDetails());
+                    args.putString("typeoftransaction", ir.getTypeOfTransaction());
+                    args.putDouble("amount", Round.roundedDouble(ir.getAmount()));
+                    if (confirmCheckBox.isChecked()) {
+                        args.putString("label", "NeedConfirmation");
+                    }
+                    if (repeatedCheckBox.isChecked()) {
+                        int hashCode = (ir.getPaymentDetails() + ir.getCard() + ir.getDateTime()).hashCode();
+                        args.putInt("hash", hashCode);
+                        args.putLong("datetime", today.getTimeInMillis());
+                        int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                        switch (checkedRadioButtonId) {
+                            case R.id.rbEveryDayOfMonth:
+                                args.putInt("rbPos", 1);
+                                break;
+                            case R.id.rbLastDayOfMonth:
+                                args.putInt("rbPos", 2);
+                                break;
+                            case R.id.rbEveryDay:
+                                args.putInt("rbPos", 3);
+                                break;
+                            case R.id.rbEveryWorkingDay:
+                                args.putInt("rbPos", 4);
+                                break;
+                            case R.id.rbEveryDayOfWeek:
+                                args.putInt("rbPos", 5);
+                                break;
+                            case R.id.rbCustom:
+                                args.putInt("rbPos", 6);
+                                if (!tvCustom.getText().toString().equals("")) {
+                                    args.putString("custom", tvCustom.getText().toString());
+                                } else {
+                                    flag = false;
+                                }
+                                break;
+                        }
+                    } else {
+                        args.putInt("rbPos", 0);
+                        args.putLong("datetime", ir.getDateTime());
+                        args.putString("label", "NeedConfirmation");
+                    }
+                    if (flag) {
+                        Intent i = new Intent(getActivity(), UpdateDBIntentService.class);
+                        getActivity().startService(i.putExtras(args));
+                        paymentDetails.setText("");
+                        amount.setText("");
+                        tvCustom.setText("");
+                        dismiss();
+                    } else {
+                        Toast.makeText(getActivity(), "Необходимо ввести количество дней!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -292,7 +374,6 @@ public class AddDialog extends DialogFragment {
             }
         });
 //cancel>
-
         return v;
     }
 

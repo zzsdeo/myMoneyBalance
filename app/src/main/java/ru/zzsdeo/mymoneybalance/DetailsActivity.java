@@ -1,9 +1,7 @@
 package ru.zzsdeo.mymoneybalance;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
+import android.app.ActionBar;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -22,7 +20,9 @@ public class DetailsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar bar = getActionBar();
+        assert bar != null;
+        bar.setDisplayHomeAsUpEnabled(true);
 
         pager = (ViewPager) findViewById(R.id.pager);
         String[] projection = {"_id", "card", "datetime", "paymentdetails", "typeoftransaction", "amount", "balance", "comission", "indebtedness", "calculatedbalance", "expenceincome", "label"};
@@ -56,6 +56,7 @@ public class DetailsActivity extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.add_item);
+        menu.removeItem(R.id.settings_item);
         return super.onPrepareOptionsMenu(menu);
     }
 }
