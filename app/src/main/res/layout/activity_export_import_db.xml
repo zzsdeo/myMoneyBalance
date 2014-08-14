@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ru.zzsdeo.mymoneybalance.ExportImportDB">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import"
+        android:id="@+id/btnImportDB"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="28dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Export"
+        android:id="@+id/btnExportDB"
+        android:layout_below="@+id/btnImportDB"
+        android:layout_alignRight="@+id/btnImportDB"
+        android:layout_alignEnd="@+id/btnImportDB"
+        android:layout_marginTop="34dp" />
+</RelativeLayout>
