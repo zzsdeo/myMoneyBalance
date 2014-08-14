@@ -180,6 +180,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     public void onResume() {
         super.onResume();
         getLoaderManager().getLoader(0).forceLoad();
+        myBalance(this.getView());
 //<warning
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         if (!settings.getBoolean("start_service", true)) {
