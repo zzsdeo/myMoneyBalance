@@ -11,6 +11,8 @@ import android.util.Log;
 
 
 public class SmsService extends Service {
+    public SmsService() {
+    }
 
     private String card;
 
@@ -122,6 +124,6 @@ public class SmsService extends Service {
             startService(i);
 
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 }

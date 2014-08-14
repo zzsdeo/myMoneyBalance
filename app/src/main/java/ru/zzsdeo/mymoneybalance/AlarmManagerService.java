@@ -57,6 +57,6 @@ public class AlarmManagerService extends Service {
         Intent i = new Intent(AlarmManagerService.this, UpdateDBIntentService.class);
         i.putExtras(args);
         startService(i);
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 }
