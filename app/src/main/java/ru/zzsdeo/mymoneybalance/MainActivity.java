@@ -42,6 +42,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getStringExtra("db").equals("scheduler") && getFragmentManager().findFragmentByTag("schedulerFragment") != null) {
                     getFragmentManager().findFragmentByTag("schedulerFragment").getLoaderManager().getLoader(1).forceLoad();
+                    SchedulerFragment.minMaxBalance(getFragmentManager().findFragmentByTag("schedulerFragment").getView());
                 }
                 if (intent.getStringExtra("db").equals("mytable") && getFragmentManager().findFragmentByTag("mainFragment") != null) {
                     getFragmentManager().findFragmentByTag("mainFragment").getLoaderManager().getLoader(0).forceLoad();

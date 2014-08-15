@@ -3,19 +3,13 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.text.format.DateFormat;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -29,29 +23,56 @@ import android.widget.TextView;
 
 public class SchedulerFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
-//<vars
+    //<vars
     private SchedulerSimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
     private static final int CM_EDIT_ID = 2;
 //vars>
 
-//<functions
-    /*private void myBalance (View v) {
-        TextView cardInfo = (TextView) v.findViewById(R.id.cardInfo);
+    //<functions
+    static void minMaxBalance(View v) {
+        TextView cashMinBalance = (TextView) v.findViewById(R.id.cashMinBalance);
+        TextView cashMaxBalance = (TextView) v.findViewById(R.id.cashMaxBalance);
+        TextView card1MinBalance = (TextView) v.findViewById(R.id.card1MinBalance);
+        TextView card1MaxBalance = (TextView) v.findViewById(R.id.card1MaxBalance);
+        TextView card2MinBalance = (TextView) v.findViewById(R.id.card2MinBalance);
+        TextView card2MaxBalance = (TextView) v.findViewById(R.id.card2MaxBalance);
+
+        TextView cashMinDate = (TextView) v.findViewById(R.id.cashMinDate);
+        TextView cashMaxDate = (TextView) v.findViewById(R.id.cashMaxDate);
+        TextView card1MinDate = (TextView) v.findViewById(R.id.card1MinDate);
+        TextView card1MaxDate = (TextView) v.findViewById(R.id.card1MaxDate);
+        TextView card2MinDate = (TextView) v.findViewById(R.id.card2MinDate);
+        TextView card2MaxDate = (TextView) v.findViewById(R.id.card2MaxDate);
+
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-        Cursor c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
+        Cursor c = db.query("scheduler", null, "card = 'Cash'", null, null, null, "calculatedbalance");
         if (c.moveToFirst()) {
-            cardInfo.setText("Наличные: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+            cashMinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            cashMinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            c.moveToLast();
+            cashMaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            cashMaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
         }
-        c = db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime desc, _id desc");
+
+        c = db.query("scheduler", null, "card = 'Card2485'", null, null, null, "calculatedbalance");
         if (c.moveToFirst()) {
-            cardInfo.append("Зарплатная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+            card1MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            card1MinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            c.moveToLast();
+            card1MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            card1MaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
         }
-        c = db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime desc, _id desc");
+
+        c = db.query("scheduler", null, "card = 'Card0115'", null, null, null, "calculatedbalance");
         if (c.moveToFirst()) {
-            cardInfo.append("Кредитная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            card2MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            card2MinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            c.moveToLast();
+            card2MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            card2MaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
         }
-    }*/
+    }
 //functions>
 
     @Override
@@ -126,6 +147,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_scheduler, parent, false);
+        minMaxBalance(v);
 
         //<list view
         ListView schedulerListView = (ListView) v.findViewById(R.id.schedulerListView);
@@ -136,7 +158,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         registerForContextMenu(schedulerListView);
         getLoaderManager().initLoader(1, null, this);
 
-        schedulerListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        schedulerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Bundle args = new Bundle();
@@ -192,5 +214,6 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     public void onResume() {
         super.onResume();
         getLoaderManager().getLoader(1).forceLoad();
+        minMaxBalance(this.getView());
     }
 }

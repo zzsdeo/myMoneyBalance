@@ -37,5 +37,8 @@
     <string name="confirm_history">Подтвердить и добавить в историю</string>
     <string name="confirm">Подтвердить</string>
     <string name="title_activity_export_import_db">Экспорт/импорт базы данных</string>
+    <string name="cash">Наличные: </string>
+    <string name="credit">Кредитная: </string>
+    <string name="debit">Зарплатная: </string>
 
 </resources>
