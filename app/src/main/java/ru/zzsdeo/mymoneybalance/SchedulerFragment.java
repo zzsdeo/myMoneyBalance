@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.ContextMenu;
@@ -47,30 +49,78 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
 
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.query("scheduler", null, "card = 'Cash'", null, null, null, "calculatedbalance");
-        if (c.moveToFirst()) {
-            cashMinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            cashMinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
-            c.moveToLast();
+        if (c.moveToLast()) {
             cashMaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            cashMaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            cashMaxDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+        }
+        if (c.moveToFirst()) {
+            String b = Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance")));
+            if (c.getDouble(c.getColumnIndex("calculatedbalance")) < 0) {
+                c = db.query("scheduler", null, "card = 'Cash' and calculatedbalance < 0", null, null, null, "datetime asc");
+                if (c.moveToFirst()) {
+                    cashMinBalance.setText("warn " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + " (" + b + ")");
+                    if (c.getLong(c.getColumnIndex("datetime")) < (System.currentTimeMillis() + 1209600000L)) {
+                        cashMinDate.setTextColor(Color.RED);
+                        cashMinDate.setTypeface(null, Typeface.BOLD_ITALIC);
+                    }
+                    cashMinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+                }
+            } else {
+                cashMinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+                cashMinDate.setTextColor(Color.BLACK);
+                cashMinDate.setTypeface(null, Typeface.ITALIC);
+                cashMinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            }
         }
 
         c = db.query("scheduler", null, "card = 'Card2485'", null, null, null, "calculatedbalance");
-        if (c.moveToFirst()) {
-            card1MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            card1MinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
-            c.moveToLast();
+        if (c.moveToLast()) {
             card1MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            card1MaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            card1MaxDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+        }
+        if (c.moveToFirst()) {
+            String b = Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance")));
+            if (c.getDouble(c.getColumnIndex("calculatedbalance")) < 0) {
+                c = db.query("scheduler", null, "card = 'Card2485' and calculatedbalance < 0", null, null, null, "datetime asc");
+                if (c.moveToFirst()) {
+                    card1MinBalance.setText("warn " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + " (" + b + ")");
+                    if (c.getLong(c.getColumnIndex("datetime")) < (System.currentTimeMillis() + 1209600000L)) {
+                        card1MinDate.setTextColor(Color.RED);
+                        card1MinDate.setTypeface(null, Typeface.BOLD_ITALIC);
+                    }
+                    card1MinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+                }
+            } else {
+                card1MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+                card1MinDate.setTextColor(Color.BLACK);
+                card1MinDate.setTypeface(null, Typeface.ITALIC);
+                card1MinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            }
         }
 
         c = db.query("scheduler", null, "card = 'Card0115'", null, null, null, "calculatedbalance");
-        if (c.moveToFirst()) {
-            card2MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            card2MinDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
-            c.moveToLast();
+        if (c.moveToLast()) {
             card2MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
-            card2MaxDate.setText("дата " + DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            card2MaxDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+        }
+        if (c.moveToFirst()) {
+            String b = Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance")));
+            if (c.getDouble(c.getColumnIndex("calculatedbalance")) < 0) {
+                c = db.query("scheduler", null, "card = 'Card0115' and calculatedbalance < 0", null, null, null, "datetime asc");
+                if (c.moveToFirst()) {
+                    card2MinBalance.setText("warn " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + " (" + b + ")");
+                    if (c.getLong(c.getColumnIndex("datetime")) < (System.currentTimeMillis() + 1209600000L)) {
+                        card2MinDate.setTextColor(Color.RED);
+                        card2MinDate.setTypeface(null, Typeface.BOLD_ITALIC);
+                    }
+                    card2MinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+                }
+            } else {
+                card2MinBalance.setText("min " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+                card2MinDate.setTextColor(Color.BLACK);
+                card2MinDate.setTypeface(null, Typeface.ITALIC);
+                card2MinDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
+            }
         }
     }
 //functions>

@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 public class Round {
 
     public Round() {
-        // TODO Auto-generated constructor stub
     }
 
     public static double roundedDouble(double d) {

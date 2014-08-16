@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 
 public class SmsService extends Service {
@@ -95,10 +94,7 @@ public class SmsService extends Service {
                         } else {
                             amount = c.getDouble(c.getColumnIndex("amount"));
                         }
-                        Log.d("myLogs", "Из SMS balance " + Double.toString(balance));
                         balance = balance + amount - c.getDouble(c.getColumnIndex("comission"));
-                        Log.d("myLogs", "Из SMS amount " + Double.toString(amount));
-                        Log.d("myLogs", "Из SMS " + Double.toString(balance));
                         cv.put("calculatedbalance", Round.roundedDouble(balance));
                         db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                         cv.clear();

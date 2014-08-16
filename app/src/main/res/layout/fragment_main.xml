@@ -12,9 +12,18 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/cardInfo"
+            android:id="@+id/cardNames"
             android:layout_marginLeft="5dp"
-            android:layout_weight="2" />
+            android:layout_weight="1"
+            android:text="@string/cards" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/cardInfo"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/warningTextView"
@@ -22,7 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:gravity="right" />
+            android:gravity="right"
+            android:textStyle="italic"
+            android:layout_marginLeft="10dp" />
 
     </LinearLayout>
 

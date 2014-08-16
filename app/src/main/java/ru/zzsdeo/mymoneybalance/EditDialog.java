@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -330,7 +329,6 @@ public class EditDialog extends DialogFragment {
             public void onClick(View v) {
                 paymentDetails.setText("");
                 amount.setText("");
-                Log.d("myLogs", "args "+id);
                 dismiss();
             }
         });

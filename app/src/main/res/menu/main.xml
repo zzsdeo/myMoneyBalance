@@ -10,7 +10,7 @@
         android:id="@+id/backup_item"
         android:orderInCategory="1"
         android:showAsAction="never"
-        android:title="Экспорт/импорт"/>
+        android:title="@string/export_import"/>
 
     <item
         android:id="@+id/settings_item"

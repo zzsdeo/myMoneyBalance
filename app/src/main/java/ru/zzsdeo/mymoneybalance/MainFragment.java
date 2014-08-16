@@ -3,7 +3,6 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -13,7 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -40,15 +38,15 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
         if (c.moveToFirst()) {
-            cardInfo.setText("Наличные: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+            cardInfo.setText(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
         }
         c = db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime desc, _id desc");
         if (c.moveToFirst()) {
-            cardInfo.append("Зарплатная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
+            cardInfo.append(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
         }
         c = db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime desc, _id desc");
         if (c.moveToFirst()) {
-            cardInfo.append("Кредитная: " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
+            cardInfo.append(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
         }
     }
 //functions>
@@ -94,7 +92,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 getActivity().startService(i.putExtras(args));
                 return true;
             case CM_EDIT_ID:
-                Log.d("myLogs", "edit "+acmi.id);
                 args = new Bundle();
                 args.putLong("id", acmi.id);
                 DialogFragment editDialog = new EditDialog();

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import java.util.Calendar;
 
@@ -108,7 +107,6 @@ public class UpdateDBIntentService extends IntentService {
                     do {
                         am = c.getDouble(c.getColumnIndex("amount"));
                         balance = balance + am;
-                        Log.d("myLogs", Double.toString(balance));
                         cv.put("calculatedbalance", Round.roundedDouble(balance));
                         db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                         cv.clear();
@@ -134,7 +132,6 @@ public class UpdateDBIntentService extends IntentService {
                             am = c.getDouble(c.getColumnIndex("amount"));
                         }
                         balance = balance + am - c.getDouble(c.getColumnIndex("comission"));
-                        Log.d("myLogs", Double.toString(balance));
                         cv.put("calculatedbalance", Round.roundedDouble(balance));
                         db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                         cv.clear();
@@ -161,7 +158,6 @@ public class UpdateDBIntentService extends IntentService {
                     do {
                         am = c.getDouble(c.getColumnIndex("amount"));
                         balance = balance + am;
-                        Log.d("myLogs", Double.toString(balance));
                         cv.put("calculatedbalance", Round.roundedDouble(balance));
                         db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                         cv.clear();
@@ -227,7 +223,6 @@ public class UpdateDBIntentService extends IntentService {
                 do {
                     am = c.getDouble(c.getColumnIndex("amount"));
                     balance = balance + am;
-                    Log.d("myLogs", Double.toString(balance));
                     cv.put("calculatedbalance", Round.roundedDouble(balance));
                     db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
                     cv.clear();
