@@ -44,6 +44,7 @@
     <string name="export_import">Экспорт/импорт</string>
     <string name="export_db">Экспорт базы данных</string>
     <string name="import_db">Импорт базы данных</string>
-
+    <string name="filter">Фильтр: </string>
+    <string name="only_need_confirm">Подтвердить</string>
 
 </resources>

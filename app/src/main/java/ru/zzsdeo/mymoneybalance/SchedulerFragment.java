@@ -3,9 +3,11 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -20,7 +22,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class SchedulerFragment extends Fragment implements LoaderCallbacks<Cursor> {
@@ -29,6 +35,10 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     private SchedulerSimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
     private static final int CM_EDIT_ID = 2;
+    private String[] cardArrayFilter = {"Все", "Наличные", "Зарплатная", "Кредитная"};
+    private Spinner cardFilter;
+    private CheckBox filterNeedConfirm;
+    SharedPreferences preferences;
 //vars>
 
     //<functions
@@ -199,6 +209,69 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         View v = inflater.inflate(R.layout.fragment_scheduler, parent, false);
         minMaxBalance(v);
 
+        //<card filter
+        ArrayAdapter<String> cardAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, cardArrayFilter);
+        cardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        cardFilter = (Spinner) v.findViewById(R.id.cardFilter);
+        cardFilter.setAdapter(cardAdapter);
+        cardFilter.setPrompt("Фильтр");
+        preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        cardFilter.setSelection(preferences.getInt("filter_position_scheduler", 0));
+        cardFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v,
+                                       int position, long id) {
+                SharedPreferences.Editor editor = preferences.edit();
+                switch (position) {
+                    case 0:
+                        getLoaderManager().getLoader(1).forceLoad();
+                        editor.putInt("filter_position_scheduler", 0);
+                        editor.apply();
+                        break;
+                    case 1:
+                        getLoaderManager().getLoader(1).forceLoad();
+                        editor.putInt("filter_position_scheduler", 1);
+                        editor.apply();
+                        break;
+                    case 2:
+                        getLoaderManager().getLoader(1).forceLoad();
+                        editor.putInt("filter_position_scheduler", 2);
+                        editor.apply();
+                        break;
+                    case 3:
+                        getLoaderManager().getLoader(1).forceLoad();
+                        editor.putInt("filter_position_scheduler", 3);
+                        editor.apply();
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        filterNeedConfirm = (CheckBox) v.findViewById(R.id.filterNeedConfirm);
+        filterNeedConfirm.setChecked(preferences.getBoolean("only_need_confirm", false));
+        filterNeedConfirm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences.Editor editor = preferences.edit();
+                if (b) {
+                    getLoaderManager().getLoader(1).forceLoad();
+                    editor.putBoolean("only_need_confirm", true);
+                    editor.apply();
+                } else {
+                    getLoaderManager().getLoader(1).forceLoad();
+                    editor.putBoolean("only_need_confirm", false);
+                    editor.apply();
+                }
+            }
+        });
+        //card filter>
+
         //<list view
         ListView schedulerListView = (ListView) v.findViewById(R.id.schedulerListView);
         String[] from = new String[]{"datetime", "paymentdetails", "card", "amount", "calculatedbalance"};
@@ -235,7 +308,34 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 // You better know how to get your database.
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                 // You can use any query that returns a cursor.
-                return db.query("scheduler", null, null, null, null, null, "datetime asc");
+                switch (cardFilter.getSelectedItemPosition()) {
+                    case 0:
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, null, null, null, null, "datetime asc");
+                        }
+                    case 1:
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Cash' and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Cash'", null, null, null, "datetime asc");
+                        }
+                    case 2:
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Card2485' and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Card2485'", null, null, null, "datetime asc");
+                        }
+                    case 3:
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Card0115' and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Card0115'", null, null, null, "datetime asc");
+                        }
+                    default:
+                        return db.query("scheduler", null, null, null, null, null, "datetime asc");
+                }
             }
         };
     }
