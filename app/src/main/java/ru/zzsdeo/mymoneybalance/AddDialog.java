@@ -8,6 +8,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -17,9 +18,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -31,7 +34,8 @@ import java.util.Calendar;
 public class AddDialog extends DialogFragment {
 
     //<vars
-    private EditText paymentDetails, amount;
+    private EditText amount;
+    private AutoCompleteTextView paymentDetails;
     private Button dateButton;
     private Button timeButton;
     private Calendar today = Calendar.getInstance();
@@ -192,8 +196,9 @@ public class AddDialog extends DialogFragment {
 //card>
 
 //<comment
-        paymentDetails = (EditText) v.findViewById(R.id.editPaymentDetails);
-        //paymentDetails.clearFocus();
+        paymentDetails = (AutoCompleteTextView) v.findViewById(R.id.editPaymentDetails);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, AutoCompleteHelper.getArray());
+        paymentDetails.setAdapter(adapter);
 //comment>
 
 //<type of transaction
