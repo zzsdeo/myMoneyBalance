@@ -3,6 +3,11 @@ package ru.zzsdeo.mymoneybalance;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class AutoCompleteHelper {
 
@@ -34,6 +39,32 @@ public class AutoCompleteHelper {
         }
         System.arraycopy(paymentDetailsArrayC, 0, paymentDetailsArray, 0, paymentDetailsArrayC.length);
         System.arraycopy(paymentDetailsArrayB, 0, paymentDetailsArray, paymentDetailsArrayC.length, paymentDetailsArrayB.length);
+        /*for(int i = 0; i < paymentDetailsArray.length; i++) {
+            Log.d("myLogs", paymentDetailsArray[i]+"\n");
+        }*/
+        Arrays.sort(paymentDetailsArray);
+        /*Log.d("myLogs", "---отсортировано---\n");
+        for(int i = 0; i < paymentDetailsArray.length; i++) {
+            Log.d("myLogs", paymentDetailsArray[i]+"\n");
+        }
+        Log.d("myLogs", "---удалено---\n");*/
+
+        ArrayList<String> paymentDetailsArrayList = new ArrayList<String>();
+        String item;
+        for (int i = 0; i < paymentDetailsArray.length; i++) {
+            item = paymentDetailsArray[i];
+            if (i != paymentDetailsArray.length - 1) {
+                if (!item.equals(paymentDetailsArray[i + 1])) {
+                    paymentDetailsArrayList.add(item);
+                    //Log.d("myLogs", item + "\n");
+                }
+            } else {
+                paymentDetailsArrayList.add(item);
+                //Log.d("myLogs", item + "\n");
+            }
+        }
+        //Log.d("myLogs", "кол " + paymentDetailsArrayList.size() + "\n");
+        paymentDetailsArray = paymentDetailsArrayList.toArray(new String[paymentDetailsArrayList.size()]);
         return paymentDetailsArray;
     }
 }

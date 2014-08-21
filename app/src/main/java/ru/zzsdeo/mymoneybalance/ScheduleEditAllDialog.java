@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -35,7 +36,8 @@ import java.util.Calendar;
 public class ScheduleEditAllDialog extends DialogFragment {
 
     //<vars
-    private EditText paymentDetails, amount, tvCustom;
+    private EditText amount, tvCustom;
+    private AutoCompleteTextView paymentDetails;
     private Button dateButton;
     private Button timeButton;
     private Calendar today = Calendar.getInstance();
@@ -241,9 +243,11 @@ public class ScheduleEditAllDialog extends DialogFragment {
 //card>
 
 //<comment
-        paymentDetails = (EditText) v.findViewById(R.id.editPaymentDetails);
+        paymentDetails = (AutoCompleteTextView) v.findViewById(R.id.editPaymentDetails);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, AutoCompleteHelper.getArray());
+        paymentDetails.setAdapter(adapter);
         paymentDetails.setText(comment);
-        //paymentDetails.clearFocus();
+        paymentDetails.clearFocus();
 //comment>
 
 //<type of transaction
