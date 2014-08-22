@@ -206,6 +206,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        DatabaseManager.initializeInstance(new DBHelper(getActivity()));
         View v = inflater.inflate(R.layout.fragment_scheduler, parent, false);
         minMaxBalance(v);
 

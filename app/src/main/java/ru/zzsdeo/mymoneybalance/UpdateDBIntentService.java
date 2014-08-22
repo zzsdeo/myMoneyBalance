@@ -21,6 +21,7 @@ public class UpdateDBIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        DatabaseManager.initializeInstance(new DBHelper(this));
         LocalBroadcastManager broadcaster = LocalBroadcastManager.getInstance(this);
         Intent i = new Intent(UPDATE_RESULT);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
