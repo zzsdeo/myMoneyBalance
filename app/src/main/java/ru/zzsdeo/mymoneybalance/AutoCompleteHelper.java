@@ -24,7 +24,11 @@ public class AutoCompleteHelper {
         if (c.moveToFirst()) {
             int i = 0;
             do {
-                paymentDetailsArrayC[i] = c.getString(c.getColumnIndex("paymentdetails"));
+                if (c.getString(c.getColumnIndex("paymentdetails")) != null) {
+                    paymentDetailsArrayC[i] = c.getString(c.getColumnIndex("paymentdetails"));
+                } else {
+                    paymentDetailsArrayC[i] = "";
+                }
                 i++;
             } while (c.moveToNext());
         }
@@ -33,7 +37,11 @@ public class AutoCompleteHelper {
         if (b.moveToFirst()) {
             int i = 0;
             do {
-                paymentDetailsArrayB[i] = b.getString(b.getColumnIndex("paymentdetails"));
+                if (b.getString(b.getColumnIndex("paymentdetails")) != null) {
+                    paymentDetailsArrayB[i] = b.getString(b.getColumnIndex("paymentdetails"));
+                } else {
+                    paymentDetailsArrayB[i] = "";
+                }
                 i++;
             } while (b.moveToNext());
         }
