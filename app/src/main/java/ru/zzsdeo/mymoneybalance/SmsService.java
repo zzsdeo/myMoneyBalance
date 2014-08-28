@@ -69,7 +69,7 @@ public class SmsService extends Service {
                     if (str.matches("dostupno:\\s[0-9\\.]+(\\sRUR)")) {
                         cv.put("balance", Double.parseDouble(str.replaceAll("dostupno:\\s|\\sRUR", "").trim()));
                     }
-                    if (str.matches("zadoljennost:\\s[0-9\\.]+(\\sRUR)")) {
+                    if (str.matches("ispolzovano:\\s[0-9\\.]+(\\sRUR)")) {
                         cv.put("indebtedness", Double.parseDouble(str.replaceAll("zadoljennost:\\s|\\sRUR", "").trim()));
                     }
                     if (str.matches("komissiya:\\s[0-9\\.]+(\\sRUR)")) {
