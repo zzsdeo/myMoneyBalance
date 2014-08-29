@@ -36,14 +36,14 @@
     <string name="confirm_transaction">Подтвердить транзакцию</string>
     <string name="confirm_history">Подтвердить и добавить в историю</string>
     <string name="confirm">Подтвердить</string>
-    <string name="title_activity_export_import_db">Экспорт/импорт базы данных</string>
     <string name="cash">Наличные: </string>
     <string name="credit">Кредитная: </string>
     <string name="debit">Зарплатная: </string>
     <string name="cards">Наличные: \nЗарплатная: \nКредитная: </string>
     <string name="export_import">Экспорт/импорт</string>
-    <string name="export_db">Экспорт базы данных</string>
-    <string name="import_db">Импорт базы данных</string>
+    <string name="export_db">Экспорт базы данных -&gt;</string>
+    <string name="import_db">Импорт базы данных &lt;-</string>
+    <string name="import_sms">Импорт из SMS</string>
     <string name="filter">Фильтр: </string>
     <string name="only_need_confirm">Подтвердить</string>
 

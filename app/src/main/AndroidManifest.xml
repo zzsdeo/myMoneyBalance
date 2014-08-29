@@ -66,7 +66,7 @@
 
         <activity
             android:name=".ExportImportDB"
-            android:label="@string/title_activity_export_import_db"
+            android:label="@string/export_import"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light" >
         </activity>
