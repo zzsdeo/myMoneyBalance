@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:text="@string/import_db"
         android:id="@+id/btnImportDB"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/btnExportDB"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="@string/export_db"
         android:id="@+id/btnExportDB"
-        android:layout_below="@+id/btnImportDB"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:text="@string/import_sms"
         android:id="@+id/btnImportSms"
-        android:layout_below="@+id/btnExportDB"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/btnImportDB"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
