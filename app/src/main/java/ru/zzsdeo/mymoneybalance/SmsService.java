@@ -50,7 +50,8 @@ public class SmsService extends Service {
                         cv.put("card", str);
                         card = str;
                     }
-                    if (str.matches("[a-zA-Z0-9\\.\\,\\-\\_\\s]+") & !str.endsWith("RUR") & !str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod|Card\\d\\d\\d\\d|\\d\\d\\.\\d\\d\\.\\d\\d\\s\\d\\d\\:\\d\\d\\:\\d\\d|Telecard")) {
+                    if (!str.endsWith("RUR") & !str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod|Card\\d\\d\\d\\d|\\d\\d\\.\\d\\d\\.\\d\\d\\s\\d\\d\\:\\d\\d\\:\\d\\d|Telecard")) {
+                        //str.matches("[a-zA-Z0-9\\.\\,\\-\\_\\s]+") &
                         cv.put("paymentdetails", str);
                     }
                     if (str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod")) {

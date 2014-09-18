@@ -38,7 +38,11 @@ public class ScheduleConfirmToHistoryDialog extends DialogFragment {
     private Button dateButton;
     private Button timeButton;
     private Calendar today = Calendar.getInstance();
-    private int d, m, y, h, mi;
+    private int d = today.get(Calendar.DATE),
+            m = today.get(Calendar.MONTH),
+            y = today.get(Calendar.YEAR),
+            h = today.get(Calendar.HOUR_OF_DAY),
+            mi = today.get(Calendar.MINUTE);
     private String[] nameOfCard = {"Наличные", "Зарплатная", "Кредитная"};
     private String[] typeOfTransaction = {"Оплата", "Зачисление"};
     private InsertRecord ir = new InsertRecord();
@@ -137,12 +141,6 @@ public class ScheduleConfirmToHistoryDialog extends DialogFragment {
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.query("scheduler", null, "_id = " + id, null, null, null, null);
         c.moveToFirst();
-        today.setTimeInMillis(c.getLong(c.getColumnIndex("datetime")));
-        d = today.get(Calendar.DATE);
-        m = today.get(Calendar.MONTH);
-        y = today.get(Calendar.YEAR);
-        h = today.get(Calendar.HOUR_OF_DAY);
-        mi = today.get(Calendar.MINUTE);
         card = c.getString(c.getColumnIndex("card"));
         comment = c.getString(c.getColumnIndex("paymentdetails"));
         type = c.getString(c.getColumnIndex("typeoftransaction"));

@@ -46,5 +46,6 @@
     <string name="import_sms">Импорт из SMS</string>
     <string name="filter">Фильтр: </string>
     <string name="only_need_confirm">Подтвердить</string>
+    <string name="imp">Импорт</string>
 
 </resources>

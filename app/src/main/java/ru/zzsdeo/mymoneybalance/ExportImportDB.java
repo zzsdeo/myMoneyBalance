@@ -1,6 +1,7 @@
 package ru.zzsdeo.mymoneybalance;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
@@ -15,7 +16,7 @@ import java.nio.channels.FileChannel;
 
 
 public class ExportImportDB extends Activity {
-    Button btnExportDB, btnImportDB;
+    Button btnExportDB, btnImportDB, btnImportSMS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +43,24 @@ public class ExportImportDB extends Activity {
         btnImportDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                importDB();
+                DialogFragment yesNoDialog = new YesNoDialog();
+                yesNoDialog.show(getFragmentManager(), "yesNoDialog");
+            }
+        });
+
+        btnImportSMS = (Button) findViewById(R.id.btnImportSms);
+        btnImportSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment pickSmsDialog = new PickSmsDialog();
+                pickSmsDialog.show(getFragmentManager(), "pickSmsDialog");
             }
         });
 
     }
 
     //importing database
-    private void importDB() {
+    void importDB() {
 
         try {
             File sd = Environment.getExternalStorageDirectory();
