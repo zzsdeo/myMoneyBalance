@@ -195,8 +195,8 @@ public class UpdateDBIntentService extends IntentService {
         if (intent.getStringExtra("db").equals("recalculateallscheduler")) {
             i.putExtra("db", "scheduler");
             recalculateAllScheduler("Cash");
-            recalculateAllScheduler("Card2485");
-            recalculateAllScheduler("Card0115");
+            recalculateAllScheduler("Debit");
+            recalculateAllScheduler("Credit");
         }
 
         if (intent.getStringExtra("db").equals("updatemainfragment")) {

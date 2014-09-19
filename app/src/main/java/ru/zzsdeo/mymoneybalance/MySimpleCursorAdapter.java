@@ -37,10 +37,10 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
         } else {
             lvCard.setTextColor(Color.BLACK);
         }
-        if (card!=null && card.equals("Card2485")) {
+        if (card!=null && card.equals("Debit")) {
             lvCard.setText("Зарплатная");
         }
-        if (card!=null && card.equals("Card0115")) {
+        if (card!=null && card.equals("Credit")) {
             lvCard.setText("Кредитная");
         }
         if (card!=null && card.equals("Cash")) {

@@ -83,7 +83,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
             }
         }
 
-        c = db.query("scheduler", null, "card = 'Card2485'", null, null, null, "calculatedbalance");
+        c = db.query("scheduler", null, "card = 'Debit'", null, null, null, "calculatedbalance");
         if (c.moveToLast()) {
             card1MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
             card1MaxDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
@@ -91,7 +91,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         if (c.moveToFirst()) {
             String b = Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance")));
             if (c.getDouble(c.getColumnIndex("calculatedbalance")) < 0) {
-                c = db.query("scheduler", null, "card = 'Card2485' and calculatedbalance < 0", null, null, null, "datetime asc");
+                c = db.query("scheduler", null, "card = 'Debit' and calculatedbalance < 0", null, null, null, "datetime asc");
                 if (c.moveToFirst()) {
                     card1MinBalance.setText("warn " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + " (" + b + ")");
                     if (c.getLong(c.getColumnIndex("datetime")) < (System.currentTimeMillis() + 1209600000L)) {
@@ -108,7 +108,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
             }
         }
 
-        c = db.query("scheduler", null, "card = 'Card0115'", null, null, null, "calculatedbalance");
+        c = db.query("scheduler", null, "card = 'Credit'", null, null, null, "calculatedbalance");
         if (c.moveToLast()) {
             card2MaxBalance.setText("max " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
             card2MaxDate.setText(DateFormat.format("dd.MM.yy", c.getLong(c.getColumnIndex("datetime"))));
@@ -116,7 +116,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         if (c.moveToFirst()) {
             String b = Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance")));
             if (c.getDouble(c.getColumnIndex("calculatedbalance")) < 0) {
-                c = db.query("scheduler", null, "card = 'Card0115' and calculatedbalance < 0", null, null, null, "datetime asc");
+                c = db.query("scheduler", null, "card = 'Credit' and calculatedbalance < 0", null, null, null, "datetime asc");
                 if (c.moveToFirst()) {
                     card2MinBalance.setText("warn " + Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + " (" + b + ")");
                     if (c.getLong(c.getColumnIndex("datetime")) < (System.currentTimeMillis() + 1209600000L)) {
@@ -324,15 +324,15 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                         }
                     case 2:
                         if (filterNeedConfirm.isChecked()) {
-                            return db.query("scheduler", null, "card = 'Card2485' and label is not null", null, null, null, "datetime asc");
+                            return db.query("scheduler", null, "card = 'Debit' and label is not null", null, null, null, "datetime asc");
                         } else {
-                            return db.query("scheduler", null, "card = 'Card2485'", null, null, null, "datetime asc");
+                            return db.query("scheduler", null, "card = 'Debit'", null, null, null, "datetime asc");
                         }
                     case 3:
                         if (filterNeedConfirm.isChecked()) {
-                            return db.query("scheduler", null, "card = 'Card0115' and label is not null", null, null, null, "datetime asc");
+                            return db.query("scheduler", null, "card = 'Credit' and label is not null", null, null, null, "datetime asc");
                         } else {
-                            return db.query("scheduler", null, "card = 'Card0115'", null, null, null, "datetime asc");
+                            return db.query("scheduler", null, "card = 'Credit'", null, null, null, "datetime asc");
                         }
                     default:
                         return db.query("scheduler", null, null, null, null, null, "datetime asc");

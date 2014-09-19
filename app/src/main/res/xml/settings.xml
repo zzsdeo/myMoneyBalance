@@ -7,4 +7,16 @@
  		android:defaultValue="true">
 	</CheckBoxPreference>
 
+    <EditTextPreference
+        android:key="debit_card"
+        android:title="Зарплатная"
+        android:summary="Ввести номер карты">
+    </EditTextPreference>
+
+    <EditTextPreference
+        android:key="credit_card"
+        android:title="Кредитная"
+        android:summary="Ввести номер карты">
+    </EditTextPreference>
+
 </PreferenceScreen>

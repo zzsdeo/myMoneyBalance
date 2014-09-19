@@ -189,10 +189,10 @@ public class ScheduleEditThisDialog extends DialogFragment {
         if (card.equals("Cash")) {
             cardSpinner.setSelection(0);
         }
-        if (card.equals("Card2485")) {
+        if (card.equals("Debit")) {
             cardSpinner.setSelection(1);
         }
-        if (card.equals("Card0115")) {
+        if (card.equals("Credit")) {
             cardSpinner.setSelection(2);
         }
         cardSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -205,10 +205,10 @@ public class ScheduleEditThisDialog extends DialogFragment {
                         ir.setCard("Cash");
                         break;
                     case 1:
-                        ir.setCard("Card2485");
+                        ir.setCard("Debit");
                         break;
                     case 2:
-                        ir.setCard("Card0115");
+                        ir.setCard("Credit");
                         break;
                 }
             }
@@ -218,11 +218,11 @@ public class ScheduleEditThisDialog extends DialogFragment {
                 if (card.equals("Cash")) {
                     ir.setCard("Cash");
                 }
-                if (card.equals("Card2485")) {
-                    ir.setCard("Card2485");
+                if (card.equals("Debit")) {
+                    ir.setCard("Debit");
                 }
-                if (card.equals("Card0115")) {
-                    ir.setCard("Card0115");
+                if (card.equals("Credit")) {
+                    ir.setCard("Credit");
                 }
             }
         });

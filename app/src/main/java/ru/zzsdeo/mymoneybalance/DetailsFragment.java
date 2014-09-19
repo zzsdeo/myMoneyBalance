@@ -38,10 +38,10 @@ public class DetailsFragment extends Fragment {
         if (card.equals("Cash")) {
             card = "Наличные";
         }
-        if (card.equals("Card2485")) {
+        if (card.equals("Debit")) {
             card = "Зарплатная";
         }
-        if (card.equals("Card0115")) {
+        if (card.equals("Credit")) {
             card = "Кредитная";
         }
         tvCard.setText(card);

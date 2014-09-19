@@ -1,12 +1,14 @@
 package ru.zzsdeo.mymoneybalance;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DB_VERSION = 10;
+    private static final int DB_VERSION = 11;
 
     private void updateToV2(SQLiteDatabase db) {
         db.execSQL("alter table mytable add column date integer;");
@@ -113,6 +115,37 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("alter table scheduler add column customrepeatvalue integer;");
     }
 
+    private void updateToV11(SQLiteDatabase db) {
+        db.beginTransaction();
+        try {
+            //rewrite CardXXXX to Credit/Debit
+            ContentValues cv = new ContentValues();
+            Cursor c = db.query("mytable", null, null, null, null, null, null);
+            if (c.moveToFirst()) {
+                do {
+                    cv.put("card", "Debit");
+                    db.update("mytable", cv, "card = 'Card2485'", null);
+                    cv.put("card", "Credit");
+                    db.update("mytable", cv, "card = 'Card0115'", null);
+                } while (c.moveToNext());
+            }
+
+            c = db.query("scheduler", null, null, null, null, null, null);
+            if (c.moveToFirst()) {
+                do {
+                    cv.put("card", "Debit");
+                    db.update("scheduler", cv, "card = 'Card2485'", null);
+                    cv.put("card", "Credit");
+                    db.update("scheduler", cv, "card = 'Card0115'", null);
+                } while (c.moveToNext());
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public DBHelper(Context context) {
         super(context, "myDB", null, DB_VERSION);
     }
@@ -161,6 +194,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 2:
                     updateToV3(db);
@@ -171,6 +205,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 3:
                     updateToV4(db);
@@ -180,6 +215,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 4:
                     updateToV5(db);
@@ -188,6 +224,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 5:
                     updateToV6(db);
@@ -195,24 +232,32 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 6:
                     updateToV7(db);
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 7:
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 8:
                     updateToV9(db);
                     updateToV10(db);
+                    updateToV11(db);
                     break;
                 case 9:
                     updateToV10(db);
+                    updateToV11(db);
+                    break;
+                case 10:
+                    updateToV11(db);
                     break;
             }
 

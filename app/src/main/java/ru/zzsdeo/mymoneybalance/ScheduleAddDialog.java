@@ -188,10 +188,10 @@ public class ScheduleAddDialog extends DialogFragment {
                         ir.setCard("Cash");
                         break;
                     case 1:
-                        ir.setCard("Card2485");
+                        ir.setCard("Debit");
                         break;
                     case 2:
-                        ir.setCard("Card0115");
+                        ir.setCard("Credit");
                         break;
                 }
             }

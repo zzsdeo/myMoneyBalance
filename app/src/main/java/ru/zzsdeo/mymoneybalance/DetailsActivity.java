@@ -33,10 +33,10 @@ public class DetailsActivity extends FragmentActivity {
                 c = db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime asc, _id asc");
                 break;
             case 2:
-                c = db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime asc, _id asc");
+                c = db.query("mytable", null, "card = 'Debit'", null, null, null, "datetime asc, _id asc");
                 break;
             case 3:
-                c = db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime asc, _id asc");
+                c = db.query("mytable", null, "card = 'Credit'", null, null, null, "datetime asc, _id asc");
                 break;
         }
         pagerAdapter = new CursorPagerAdapter<DetailsFragment>(getSupportFragmentManager(), DetailsFragment.class, projection, c);

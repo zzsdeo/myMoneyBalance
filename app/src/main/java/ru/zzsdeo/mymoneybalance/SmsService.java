@@ -3,10 +3,12 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 
 
 public class SmsService extends Service {
@@ -19,7 +21,6 @@ public class SmsService extends Service {
     public void onCreate() {
         super.onCreate();
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,7 +37,7 @@ public class SmsService extends Service {
             ContentValues cv = new ContentValues();
             double amount;
             if (sms.contains("TELECARD")) {
-                card = "Card2485";
+                card = "Debit";
                 cv.put("card", card);
                 cv.put("paymentdetails", "TELECARD");
                 cv.put("typeoftransaction", "Oplata");
@@ -47,8 +48,15 @@ public class SmsService extends Service {
                 for (String str : parsedSms) {
                     str = str.trim();
                     if (str.matches("Card\\d\\d\\d\\d")) {
-                        cv.put("card", str);
-                        card = str;
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        if (str.equals(settings.getString("debit_card", ""))) {
+                            cv.put("card", "Debit");
+                            card = "Debit";
+                        }
+                        if (str.equals(settings.getString("credit_card", ""))) {
+                            cv.put("card", "Credit");
+                            card = "Credit";
+                        }
                     }
                     if (!str.endsWith("RUR") & !str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod|Card\\d\\d\\d\\d|\\d\\d\\.\\d\\d\\.\\d\\d\\s\\d\\d\\:\\d\\d\\:\\d\\d|Telecard")) {
                         //str.matches("[a-zA-Z0-9\\.\\,\\-\\_\\s]+") &

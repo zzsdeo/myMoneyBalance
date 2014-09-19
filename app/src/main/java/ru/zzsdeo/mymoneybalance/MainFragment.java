@@ -46,11 +46,11 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         if (c.moveToFirst()) {
             cardInfo.setText(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
         }
-        c = db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime desc, _id desc");
+        c = db.query("mytable", null, "card = 'Debit'", null, null, null, "datetime desc, _id desc");
         if (c.moveToFirst()) {
             cardInfo.append(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))) + "\n");
         }
-        c = db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime desc, _id desc");
+        c = db.query("mytable", null, "card = 'Credit'", null, null, null, "datetime desc, _id desc");
         if (c.moveToFirst()) {
             cardInfo.append(Double.toString(c.getDouble(c.getColumnIndex("calculatedbalance"))));
         }
@@ -206,9 +206,9 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                     case 1:
                         return db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
                     case 2:
-                        return db.query("mytable", null, "card = 'Card2485'", null, null, null, "datetime desc, _id desc");
+                        return db.query("mytable", null, "card = 'Debit'", null, null, null, "datetime desc, _id desc");
                     case 3:
-                        return db.query("mytable", null, "card = 'Card0115'", null, null, null, "datetime desc, _id desc");
+                        return db.query("mytable", null, "card = 'Credit'", null, null, null, "datetime desc, _id desc");
                     default:
                         return db.query("mytable", null, null, null, null, null, "datetime desc, _id desc");
                 }
