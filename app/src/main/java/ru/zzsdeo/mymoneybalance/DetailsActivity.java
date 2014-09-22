@@ -68,6 +68,7 @@ public class DetailsActivity extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.add_item);
         menu.removeItem(R.id.settings_item);
+        menu.removeItem(R.id.backup_item);
         return super.onPrepareOptionsMenu(menu);
     }
 }
