@@ -95,6 +95,7 @@ public class UpdateDBIntentService extends IntentService {
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.DAY_OF_MONTH, Integer.parseInt(intent.getStringExtra("custom")));
                         } while (END_OF_TIME > today.getTimeInMillis());
+                        break;
                 }
                 cv.clear();
                 Cursor c = db.query("scheduler", null, "card = " + '"' + intent.getStringExtra("card") + '"', null, null, null, "datetime asc");
