@@ -66,9 +66,7 @@ public class DetailsActivity extends FragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.removeItem(R.id.add_item);
-        menu.removeItem(R.id.settings_item);
-        menu.removeItem(R.id.backup_item);
+        menu.clear();
         return super.onPrepareOptionsMenu(menu);
     }
 }

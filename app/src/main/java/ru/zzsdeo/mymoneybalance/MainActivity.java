@@ -11,19 +11,25 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
     BroadcastReceiver receiver;
+    ActionBar bar;
+    //Boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //<tabs
-        ActionBar bar = getActionBar();
-
+        bar = getActionBar();
         assert bar != null;
+
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         ActionBar.Tab tab = bar.newTab();
@@ -68,6 +74,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        /*if (flag) {
+            menu.getItem(0).setVisible(false);
+        }*/
+        bar.setDisplayShowCustomEnabled(false);
         return true;
     }
 
@@ -79,6 +89,42 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 return true;
             case R.id.backup_item:
                 startActivity(new Intent(this, ExportImportDB.class));
+                return true;
+            case R.id.search_item:
+                //flag = true;
+                bar.setDisplayShowCustomEnabled(true);
+                bar.setCustomView(R.layout.search);
+                item.setVisible(false);
+                Animation show = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.search_anim_show);
+                View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                searchLayout.startAnimation(show);
+                ImageButton clearButton = (ImageButton) bar.getCustomView().findViewById(R.id.clearButton);
+                clearButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Animation hide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.search_anim_hide);
+                        View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                        hide.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                //flag = false;
+                                bar.setDisplayShowCustomEnabled(false);
+                                invalidateOptionsMenu();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        searchLayout.startAnimation(hide);
+                    }
+                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

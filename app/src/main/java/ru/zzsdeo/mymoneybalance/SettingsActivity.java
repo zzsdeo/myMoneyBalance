@@ -1,5 +1,6 @@
 package ru.zzsdeo.mymoneybalance;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -12,7 +13,10 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar bar = getActionBar();
+        assert bar != null;
+        bar.setDisplayHomeAsUpEnabled(true);
 
         FragmentManager fm = getFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);

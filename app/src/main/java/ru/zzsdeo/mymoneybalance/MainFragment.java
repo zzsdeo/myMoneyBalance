@@ -1,5 +1,6 @@
 package ru.zzsdeo.mymoneybalance;
 
+import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -13,6 +14,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -22,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -125,6 +130,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         warningText.setTextColor(Color.RED);
         myBalance(v);
 
+
         //<card filter
         ArrayAdapter<String> cardAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, cardArrayFilter);
         cardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -175,6 +181,13 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         String[] from = new String[]{"datetime", "paymentdetails", "card", "amount", "calculatedbalance"};
         int[] to = new int[]{R.id.lvDateTime, R.id.lvDetails, R.id.lvCard, R.id.lvAmount, R.id.lvBalance};
         scAdapter = new MySimpleCursorAdapter(getActivity(), R.layout.list_item, null, from, to, 0);
+        scAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence charSequence) {
+                SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+                return db.query("mytable", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+            }
+        });
         transactionsListView.setAdapter(scAdapter);
         registerForContextMenu(transactionsListView);
         getLoaderManager().initLoader(0, null, this);
@@ -189,6 +202,31 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             }
         });
         //list view>
+
+        //<search
+        ActionBar bar = getActivity().getActionBar();
+        assert bar != null;
+        if (bar.getCustomView() != null) {
+            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+            searchText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                    scAdapter.getFilter().filter(charSequence);
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+        }
+
+        //search>
         return v;
     }
 
