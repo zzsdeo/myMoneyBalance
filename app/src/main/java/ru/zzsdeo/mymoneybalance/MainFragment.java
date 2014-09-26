@@ -22,11 +22,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -41,6 +44,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     private String[] cardArrayFilter = {"Все", "Наличные", "Зарплатная", "Кредитная"};
     private Spinner cardFilter;
     SharedPreferences preferences;
+    ActionBar bar;
 //vars>
 
 //<functions
@@ -74,6 +78,65 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             case R.id.add_item:
                 DialogFragment addDialog = new AddDialog();
                 addDialog.show(getFragmentManager(), "addDialog");
+                return true;
+            case R.id.search_item:
+                bar = getActivity().getActionBar();
+                assert bar != null;
+                bar.setDisplayShowCustomEnabled(true);
+                bar.setCustomView(R.layout.search);
+                item.setVisible(false);
+                Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
+                View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                searchLayout.startAnimation(show);
+
+                //<search
+                EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                searchText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                        scAdapter.getFilter().filter(charSequence);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                //search>
+
+
+                ImageButton clearButton = (ImageButton) bar.getCustomView().findViewById(R.id.clearButton);
+                clearButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
+                        View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                        hide.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                bar.setDisplayShowCustomEnabled(false);
+                                getLoaderManager().getLoader(0).forceLoad();
+                                getActivity().invalidateOptionsMenu();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        searchLayout.startAnimation(hide);
+                    }
+                });
                 return true;
             default:
                 return false;
@@ -185,7 +248,18 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             @Override
             public Cursor runQuery(CharSequence charSequence) {
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-                return db.query("mytable", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                switch (cardFilter.getSelectedItemPosition()) {
+                    case 0:
+                        return db.query("mytable", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                    case 1:
+                        return db.query("mytable", null, "card = 'Cash' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                    case 2:
+                        return db.query("mytable", null, "card = 'Debit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                    case 3:
+                        return db.query("mytable", null, "card = 'Credit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                    default:
+                        return db.query("mytable", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime desc, _id desc");
+                }
             }
         });
         transactionsListView.setAdapter(scAdapter);
@@ -202,31 +276,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             }
         });
         //list view>
-
-        //<search
-        ActionBar bar = getActivity().getActionBar();
-        assert bar != null;
-        if (bar.getCustomView() != null) {
-            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
-            searchText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                    scAdapter.getFilter().filter(charSequence);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-        }
-
-        //search>
         return v;
     }
 
