@@ -90,7 +90,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 searchLayout.startAnimation(show);
 
                 //<search
-                EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
                 searchText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -124,6 +124,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
+                                searchText.setText("");
                                 bar.setDisplayShowCustomEnabled(false);
                                 getLoaderManager().getLoader(0).forceLoad();
                                 getActivity().invalidateOptionsMenu();
@@ -208,24 +209,42 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
                 SharedPreferences.Editor editor = preferences.edit();
+                /*bar = getActivity().getActionBar();
+                assert bar != null;*/
                 switch (position) {
                     case 0:
                         getLoaderManager().getLoader(0).forceLoad();
+                        /*if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }*/
                         editor.putInt("filter_position_history", 0);
                         editor.apply();
                         break;
                     case 1:
                         getLoaderManager().getLoader(0).forceLoad();
+                        /*if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }*/
                         editor.putInt("filter_position_history", 1);
                         editor.apply();
                         break;
                     case 2:
                         getLoaderManager().getLoader(0).forceLoad();
+                        /*if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }*/
                         editor.putInt("filter_position_history", 2);
                         editor.apply();
                         break;
                     case 3:
                         getLoaderManager().getLoader(0).forceLoad();
+                        /*if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }*/
                         editor.putInt("filter_position_history", 3);
                         editor.apply();
                         break;
@@ -286,17 +305,39 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             public Cursor loadInBackground() {
                 // You better know how to get your database.
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+                bar = getActivity().getActionBar();
+                assert bar != null;
                 // You can use any query that returns a cursor.
                 switch (cardFilter.getSelectedItemPosition()) {
                     case 0:
+                        if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }
                         return db.query("mytable", null, null, null, null, null, "datetime desc, _id desc");
                     case 1:
+                        if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }
                         return db.query("mytable", null, "card = 'Cash'", null, null, null, "datetime desc, _id desc");
                     case 2:
+                        if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }
                         return db.query("mytable", null, "card = 'Debit'", null, null, null, "datetime desc, _id desc");
                     case 3:
+                        if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }
                         return db.query("mytable", null, "card = 'Credit'", null, null, null, "datetime desc, _id desc");
                     default:
+                        if (bar.getCustomView() != null) {
+                            EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                            scAdapter.getFilter().filter(searchText.getText());
+                        }
                         return db.query("mytable", null, null, null, null, null, "datetime desc, _id desc");
                 }
             }
