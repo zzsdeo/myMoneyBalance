@@ -1,5 +1,6 @@
 package ru.zzsdeo.mymoneybalance;
 
+import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -13,6 +14,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -20,11 +23,16 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,6 +47,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     private Spinner cardFilter;
     private CheckBox filterNeedConfirm;
     SharedPreferences preferences;
+    ActionBar bar;
 //vars>
 
     //<functions
@@ -148,6 +157,66 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 DialogFragment schedulerAddDialog = new ScheduleAddDialog();
                 schedulerAddDialog.show(getFragmentManager(), "schedulerAddDialog");
                 return true;
+            case R.id.search_item:
+                bar = getActivity().getActionBar();
+                assert bar != null;
+                bar.setDisplayShowCustomEnabled(true);
+                bar.setCustomView(R.layout.search);
+                item.setVisible(false);
+                Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
+                View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                searchLayout.startAnimation(show);
+
+                //<search
+                final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                searchText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                        scAdapter.getFilter().filter(charSequence);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+                //search>
+
+
+                ImageButton clearButton = (ImageButton) bar.getCustomView().findViewById(R.id.clearButton);
+                clearButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
+                        View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
+                        hide.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                searchText.setText("");
+                                bar.setDisplayShowCustomEnabled(false);
+                                getLoaderManager().getLoader(1).forceLoad();
+                                getActivity().invalidateOptionsMenu();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        searchLayout.startAnimation(hide);
+                    }
+                });
+                return true;
             default:
                 return false;
         }
@@ -224,6 +293,10 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
                 SharedPreferences.Editor editor = preferences.edit();
+                bar = getActivity().getActionBar();
+                assert bar != null;
+                bar.setDisplayShowCustomEnabled(false);
+                getActivity().invalidateOptionsMenu();
                 switch (position) {
                     case 0:
                         getLoaderManager().getLoader(1).forceLoad();
@@ -278,6 +351,24 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         String[] from = new String[]{"datetime", "paymentdetails", "card", "amount", "calculatedbalance"};
         int[] to = new int[]{R.id.lvDateTime, R.id.lvDetails, R.id.lvCard, R.id.lvAmount, R.id.lvBalance};
         scAdapter = new SchedulerSimpleCursorAdapter(getActivity(), R.layout.list_item, null, from, to, 0);
+        scAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence charSequence) {
+                SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+                switch (cardFilter.getSelectedItemPosition()) {
+                    case 0:
+                        return db.query("scheduler", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                    case 1:
+                        return db.query("scheduler", null, "card = 'Cash' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                    case 2:
+                        return db.query("scheduler", null, "card = 'Debit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                    case 3:
+                        return db.query("scheduler", null, "card = 'Credit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                    default:
+                        return db.query("scheduler", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                }
+            }
+        });
         schedulerListView.setAdapter(scAdapter);
         registerForContextMenu(schedulerListView);
         getLoaderManager().initLoader(1, null, this);
