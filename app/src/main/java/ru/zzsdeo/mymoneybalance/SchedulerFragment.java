@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
@@ -169,6 +170,9 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
 
                 //<search
                 final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
+                searchText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(searchText, InputMethodManager.SHOW_IMPLICIT);
                 searchText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -197,12 +201,13 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                         hide.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
-
+                                searchText.clearFocus();
+                                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
                             }
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
-                                searchText.setText("");
                                 bar.setDisplayShowCustomEnabled(false);
                                 getLoaderManager().getLoader(1).forceLoad();
                                 getActivity().invalidateOptionsMenu();

@@ -39,7 +39,7 @@
     <string name="cash">Нал. </string>
     <string name="credit">Кред. </string>
     <string name="debit">Зарп. </string>
-    <string name="cards">Наличные \nЗарплатная \nКредитная </string>
+    <string name="cards">Наличные\nЗарплатная\nКредитная</string>
     <string name="export_import">Экспорт/импорт</string>
     <string name="export_db">Экспорт базы данных</string>
     <string name="import_db">Импорт базы данных</string>

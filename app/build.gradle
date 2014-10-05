@@ -1,9 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        zzsdeo {
+            keyAlias 'zzsdeo'
+            keyPassword 'crimson'
+            storeFile file('C:/Users/Andrew/Dropbox/Android/Keys/zzsdeo.jks')
+            storePassword 'crimson'
+        }
+    }
     compileSdkVersion 19
     buildToolsVersion '20.0.0'
-
     defaultConfig {
         applicationId "ru.zzsdeo.mymoneybalance"
         minSdkVersion 15
@@ -15,6 +22,8 @@ android {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.zzsdeo
+            zipAlign true
         }
     }
     compileOptions {

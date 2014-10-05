@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -69,6 +70,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(null, 0);
         bar.setDisplayShowCustomEnabled(false);
         return true;
     }
