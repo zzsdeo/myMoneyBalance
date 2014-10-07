@@ -12,6 +12,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -207,7 +208,8 @@ public class ScheduleAddDialog extends DialogFragment {
         paymentDetails = (AutoCompleteTextView) v.findViewById(R.id.editPaymentDetails);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, AutoCompleteHelper.getArray());
         paymentDetails.setAdapter(adapter);
-        //paymentDetails.clearFocus();
+        paymentDetails.requestFocus();
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 //comment>
 
 //<type of transaction
@@ -244,7 +246,6 @@ public class ScheduleAddDialog extends DialogFragment {
 
 //<amount
         amount = (EditText) v.findViewById(R.id.editAmount);
-        //amount.clearFocus();
 //amount>
 
 //<repeat checkbox

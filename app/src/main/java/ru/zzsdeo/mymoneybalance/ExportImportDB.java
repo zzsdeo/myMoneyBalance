@@ -1,5 +1,6 @@
 package ru.zzsdeo.mymoneybalance;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
@@ -22,7 +23,9 @@ public class ExportImportDB extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export_import_db);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar bar = getActionBar();
+        assert bar != null;
+        bar.setDisplayHomeAsUpEnabled(true);
 //creating a new folder for the database to be backuped to
         File direct = new File(Environment.getExternalStorageDirectory() + "/MyMoneyBalance/database");
         if (!direct.exists()) {
@@ -35,7 +38,8 @@ public class ExportImportDB extends Activity {
         btnExportDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                exportDB();
+                DialogFragment yesNoExportDialog = new YesNoExportDialog();
+                yesNoExportDialog.show(getFragmentManager(), "yesNoExportDialog");
             }
         });
 
@@ -91,7 +95,7 @@ public class ExportImportDB extends Activity {
     }
 
     //exporting database
-    private void exportDB() {
+    void exportDB() {
 
         try {
             File sd = Environment.getExternalStorageDirectory();

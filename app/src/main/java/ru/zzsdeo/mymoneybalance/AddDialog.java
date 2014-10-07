@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -200,6 +203,8 @@ public class AddDialog extends DialogFragment {
         paymentDetails = (AutoCompleteTextView) v.findViewById(R.id.editPaymentDetails);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, AutoCompleteHelper.getArray());
         paymentDetails.setAdapter(adapter);
+        paymentDetails.requestFocus();
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 //comment>
 
 //<type of transaction
@@ -240,7 +245,6 @@ public class AddDialog extends DialogFragment {
 
 //<amount
         amount = (EditText) v.findViewById(R.id.editAmount);
-        //amount.clearFocus();
 //amount>
 
 //<save button

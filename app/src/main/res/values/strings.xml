@@ -47,6 +47,7 @@
     <string name="filter">Фильтр: </string>
     <string name="only_need_confirm">Подтвердить</string>
     <string name="imp">Импорт</string>
+    <string name="exp">Экспорт</string>
     <string name="search">Поиск</string>
 
 </resources>

@@ -15,6 +15,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -234,6 +235,7 @@ public class ScheduleEditThisDialog extends DialogFragment {
         paymentDetails.setAdapter(adapter);
         paymentDetails.setText(comment);
         paymentDetails.clearFocus();
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 //comment>
 
 //<type of transaction
@@ -276,7 +278,6 @@ public class ScheduleEditThisDialog extends DialogFragment {
 //<amount
         amount = (EditText) v.findViewById(R.id.editAmount);
         amount.setText(Double.toString(Math.abs(amnt)));
-        //amount.clearFocus();
 //amount>
 
 //<save button

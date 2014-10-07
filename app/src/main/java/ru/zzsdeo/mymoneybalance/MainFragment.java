@@ -214,6 +214,10 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
             public void onItemSelected(AdapterView<?> parent, View v,
                                        int position, long id) {
                 SharedPreferences.Editor editor = preferences.edit();
+                if (getActivity().getCurrentFocus() != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+                }
                 bar = getActivity().getActionBar();
                 assert bar != null;
                 bar.setDisplayShowCustomEnabled(false);
