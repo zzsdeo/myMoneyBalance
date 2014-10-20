@@ -181,7 +181,8 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                        scAdapter.getFilter().filter(charSequence);
+                        String s = charSequence.toString().toLowerCase();
+                        scAdapter.getFilter().filter(s);
                     }
 
                     @Override
@@ -366,15 +367,15 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                 switch (cardFilter.getSelectedItemPosition()) {
                     case 0:
-                        return db.query("scheduler", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
                     case 1:
-                        return db.query("scheduler", null, "card = 'Cash' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        return db.query("scheduler", null, "card = 'Cash' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
                     case 2:
-                        return db.query("scheduler", null, "card = 'Debit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        return db.query("scheduler", null, "card = 'Debit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
                     case 3:
-                        return db.query("scheduler", null, "card = 'Credit' and paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        return db.query("scheduler", null, "card = 'Credit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
                     default:
-                        return db.query("scheduler", null, "paymentdetails like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
                 }
             }
         });

@@ -3,11 +3,9 @@ package ru.zzsdeo.mymoneybalance;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class AutoCompleteHelper {
 

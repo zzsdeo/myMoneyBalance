@@ -1,8 +1,9 @@
 package ru.zzsdeo.mymoneybalance;
+
 import android.app.Application;
 
-import org.acra.*;
-import org.acra.annotation.*;
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
 
 @ReportsCrashes (
                     formKey = "", // This is required for backward compatibility but not used

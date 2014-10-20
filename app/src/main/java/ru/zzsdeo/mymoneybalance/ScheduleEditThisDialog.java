@@ -303,6 +303,7 @@ public class ScheduleEditThisDialog extends DialogFragment {
                     cv.put("paymentdetails", ir.getPaymentDetails());
                     cv.put("typeoftransaction", ir.getTypeOfTransaction());
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
+                    cv.put("searchindex", ir.getPaymentDetails().toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", ir.getDateTime()));
                     db.update("scheduler", cv, "_id = " + id, null);
                     //обновление баланса
                     Bundle args = new Bundle();

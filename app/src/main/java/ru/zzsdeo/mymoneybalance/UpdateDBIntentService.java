@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.format.DateFormat;
 
 import java.util.Calendar;
 
@@ -42,12 +43,14 @@ public class UpdateDBIntentService extends IntentService {
                     case 0:
                         cv.put("repeat", 0);
                         cv.put("datetime", today.getTimeInMillis());
+                        cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                         db.insert("scheduler", null, cv);
                         break;
                     case 1:
                         cv.put("repeat", 1);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
+                            cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.MONTH, 1);
                         } while (END_OF_TIME > today.getTimeInMillis());
@@ -57,6 +60,7 @@ public class UpdateDBIntentService extends IntentService {
                         do {
                             today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
                             cv.put("datetime", today.getTimeInMillis());
+                            cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.MONTH, 1);
                         } while (END_OF_TIME > today.getTimeInMillis());
@@ -65,6 +69,7 @@ public class UpdateDBIntentService extends IntentService {
                         cv.put("repeat", 3);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
+                            cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.DAY_OF_MONTH, 1);
                         } while (END_OF_TIME > today.getTimeInMillis());
@@ -74,6 +79,7 @@ public class UpdateDBIntentService extends IntentService {
                         do {
                             if (today.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && today.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
                                 cv.put("datetime", today.getTimeInMillis());
+                                cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                                 db.insert("scheduler", null, cv);
                             }
                             today.add(Calendar.DAY_OF_WEEK, 1);
@@ -83,6 +89,7 @@ public class UpdateDBIntentService extends IntentService {
                         cv.put("repeat", 5);
                         do {
                             cv.put("datetime", today.getTimeInMillis());
+                            cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.DAY_OF_MONTH, 7);
                         } while (END_OF_TIME > today.getTimeInMillis());
@@ -92,6 +99,7 @@ public class UpdateDBIntentService extends IntentService {
                         cv.put("customrepeatvalue", Integer.parseInt(intent.getStringExtra("custom")));
                         do {
                             cv.put("datetime", today.getTimeInMillis());
+                            cv.put("searchindex", intent.getStringExtra("paymentdetails").toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", today.getTimeInMillis()));
                             db.insert("scheduler", null, cv);
                             today.add(Calendar.DAY_OF_MONTH, Integer.parseInt(intent.getStringExtra("custom")));
                         } while (END_OF_TIME > today.getTimeInMillis());

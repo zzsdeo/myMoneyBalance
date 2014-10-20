@@ -304,6 +304,7 @@ public class ScheduleConfirmToHistoryDialog extends DialogFragment {
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
                     cv.put("expenceincome", ir.getExpenceIncome());
                     cv.put("label", "Manual");
+                    cv.put("searchindex", ir.getPaymentDetails().toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", ir.getDateTime()));
                     db.delete("scheduler", "_id = " + id, null);
                     db.insert("mytable", null, cv);
                     //обновление баланса

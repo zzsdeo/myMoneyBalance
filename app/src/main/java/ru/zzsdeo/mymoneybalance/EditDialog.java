@@ -309,6 +309,7 @@ public class EditDialog extends DialogFragment {
                     cv.put("amount", Round.roundedDouble(ir.getAmount()));
                     cv.put("expenceincome", ir.getExpenceIncome());
                     cv.put("label", "Manual");
+                    cv.put("searchindex", ir.getPaymentDetails().toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", ir.getDateTime()));
                     db.update("mytable", cv, "_id = " + id, null);
                     //обновление баланса
                     Bundle args = new Bundle();

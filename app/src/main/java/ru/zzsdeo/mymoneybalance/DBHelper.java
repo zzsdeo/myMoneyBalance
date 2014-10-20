@@ -5,10 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DB_VERSION = 11;
+    private static final int DB_VERSION = 12;
 
     private void updateToV2(SQLiteDatabase db) {
         db.execSQL("alter table mytable add column date integer;");
@@ -146,6 +147,37 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void updateToV12(SQLiteDatabase db) {
+        db.execSQL("alter table mytable add column searchindex text;");
+        db.execSQL("alter table scheduler add column searchindex text;");
+        db.beginTransaction();
+        try {
+            ContentValues cv = new ContentValues();
+            Cursor c = db.query("mytable", null, null, null, null, null, null);
+            String index;
+            if (c.moveToFirst()) {
+                do {
+                    index = c.getString(c.getColumnIndex("paymentdetails")).toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", c.getLong(c.getColumnIndex("datetime")));
+                    cv.put("searchindex", index);
+                    db.update("mytable", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                } while (c.moveToNext());
+            }
+
+            c = db.query("scheduler", null, null, null, null, null, null);
+            if (c.moveToFirst()) {
+                do {
+                    index = c.getString(c.getColumnIndex("paymentdetails")).toLowerCase() + " " + DateFormat.format("dd.MM.yyyy", c.getLong(c.getColumnIndex("datetime")));
+                    cv.put("searchindex", index);
+                    db.update("scheduler", cv, "_id = " + '"' + c.getInt(c.getColumnIndex("_id")) + '"', null);
+                } while (c.moveToNext());
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public DBHelper(Context context) {
         super(context, "myDB", null, DB_VERSION);
     }
@@ -164,7 +196,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "indebtedness real,"
                 + "calculatedbalance real,"
                 + "expenceincome text,"
-                + "label text" + ");");
+                + "label text,"
+                + "searchindex text" + ");");
         db.execSQL("create table scheduler ("
                 + "_id integer primary key autoincrement,"
                 + "card text,"
@@ -176,7 +209,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "label text,"
                 + "hash integer,"
                 + "repeat integer,"
-                + "customrepeatvalue integer" + ");");
+                + "customrepeatvalue integer,"
+                + "searchindex text" + ");");
     }
 
     @Override
@@ -195,6 +229,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 2:
                     updateToV3(db);
@@ -206,6 +241,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 3:
                     updateToV4(db);
@@ -216,6 +252,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 4:
                     updateToV5(db);
@@ -225,6 +262,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 5:
                     updateToV6(db);
@@ -233,6 +271,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 6:
                     updateToV7(db);
@@ -240,24 +279,32 @@ public class DBHelper extends SQLiteOpenHelper {
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 7:
                     updateToV8(db);
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 8:
                     updateToV9(db);
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 9:
                     updateToV10(db);
                     updateToV11(db);
+                    updateToV12(db);
                     break;
                 case 10:
                     updateToV11(db);
+                    updateToV12(db);
+                    break;
+                case 11:
+                    updateToV12(db);
                     break;
             }
 
