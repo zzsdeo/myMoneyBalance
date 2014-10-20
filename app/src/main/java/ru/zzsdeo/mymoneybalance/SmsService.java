@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 
 
 public class SmsService extends Service {
@@ -36,6 +37,7 @@ public class SmsService extends Service {
             SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
             ContentValues cv = new ContentValues();
             double amount;
+            String index = "";
             if (sms.contains("TELECARD")) {
                 card = "Debit";
                 cv.put("card", card);
@@ -61,6 +63,7 @@ public class SmsService extends Service {
                     if (!str.endsWith("RUR") & !str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod|Card\\d\\d\\d\\d|\\d\\d\\.\\d\\d\\.\\d\\d\\s\\d\\d\\:\\d\\d\\:\\d\\d|Telecard")) {
                         //str.matches("[a-zA-Z0-9\\.\\,\\-\\_\\s]+") &
                         cv.put("paymentdetails", str);
+                        index = str.toLowerCase() + " ";
                     }
                     if (str.matches("Oplata|Cash\\-in|Snyatie\\snalichnih|Zachislenie|Oplata\\sv\\sI\\-net|Predauth|Perevod|Poluchen\\sperevod")) {
                         cv.put("typeoftransaction", str);
@@ -89,6 +92,7 @@ public class SmsService extends Service {
             }
             cv.put("label", "Auto");
             cv.put("datetime", dateInMill);
+            cv.put("searchindex", index + DateFormat.format("dd.MM.yyyy", dateInMill));
             db.beginTransaction();
             try {
                 db.insert("mytable", null, cv);
