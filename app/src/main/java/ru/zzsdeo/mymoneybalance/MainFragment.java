@@ -46,6 +46,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     private Spinner cardFilter;
     SharedPreferences preferences;
     ActionBar bar;
+    View balanceLayout;
 //vars>
 
 //<functions
@@ -89,6 +90,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
                 View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                 searchLayout.startAnimation(show);
+                balanceLayout.setVisibility(View.GONE);
 
                 //<search
                 final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
@@ -127,6 +129,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                                 searchText.clearFocus();
                                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+                                balanceLayout.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -195,6 +198,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, parent, false);
+        balanceLayout = v.findViewById(R.id.balanceLayout);
         DatabaseManager.initializeInstance(new DBHelper(getActivity()));
         warningText = (TextView) v.findViewById(R.id.warningTextView);
         warningText.setTextColor(Color.RED);
@@ -223,6 +227,7 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 assert bar != null;
                 bar.setDisplayShowCustomEnabled(false);
                 getActivity().invalidateOptionsMenu();
+                balanceLayout.setVisibility(View.VISIBLE);
                 switch (position) {
                     case 0:
                         getLoaderManager().getLoader(0).forceLoad();

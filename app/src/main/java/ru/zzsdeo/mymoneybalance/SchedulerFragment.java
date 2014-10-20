@@ -49,6 +49,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     private CheckBox filterNeedConfirm;
     SharedPreferences preferences;
     ActionBar bar;
+    View warnLayout;
 //vars>
 
     //<functions
@@ -167,6 +168,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
                 View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                 searchLayout.startAnimation(show);
+                warnLayout.setVisibility(View.GONE);
 
                 //<search
                 final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
@@ -205,6 +207,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                                 searchText.clearFocus();
                                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+                                warnLayout.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -283,6 +286,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         DatabaseManager.initializeInstance(new DBHelper(getActivity()));
         View v = inflater.inflate(R.layout.fragment_scheduler, parent, false);
+        warnLayout = v.findViewById(R.id.warnLayout);
         minMaxBalance(v);
 
         //<card filter
@@ -307,6 +311,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 assert bar != null;
                 bar.setDisplayShowCustomEnabled(false);
                 getActivity().invalidateOptionsMenu();
+                warnLayout.setVisibility(View.VISIBLE);
                 switch (position) {
                     case 0:
                         getLoaderManager().getLoader(1).forceLoad();
@@ -343,6 +348,15 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences.Editor editor = preferences.edit();
+                if (getActivity().getCurrentFocus() != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+                }
+                bar = getActivity().getActionBar();
+                assert bar != null;
+                bar.setDisplayShowCustomEnabled(false);
+                getActivity().invalidateOptionsMenu();
+                warnLayout.setVisibility(View.VISIBLE);
                 if (b) {
                     getLoaderManager().getLoader(1).forceLoad();
                     editor.putBoolean("only_need_confirm", true);
@@ -367,15 +381,35 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
                 switch (cardFilter.getSelectedItemPosition()) {
                     case 0:
-                        return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"' + "and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        }
                     case 1:
-                        return db.query("scheduler", null, "card = 'Cash' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Cash' and searchindex like " + '"' + "%" + charSequence + "%" + '"' + "and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Cash' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        }
                     case 2:
-                        return db.query("scheduler", null, "card = 'Debit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Debit' and searchindex like " + '"' + "%" + charSequence + "%" + '"' + "and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Debit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        }
                     case 3:
-                        return db.query("scheduler", null, "card = 'Credit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "card = 'Credit' and searchindex like " + '"' + "%" + charSequence + "%" + '"' + "and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "card = 'Credit' and searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        }
                     default:
-                        return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        if (filterNeedConfirm.isChecked()) {
+                            return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"' + "and label is not null", null, null, null, "datetime asc");
+                        } else {
+                            return db.query("scheduler", null, "searchindex like " + '"' + "%" + charSequence + "%" + '"', null, null, null, "datetime asc");
+                        }
                 }
             }
         });
