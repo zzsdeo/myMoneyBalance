@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
@@ -50,6 +51,10 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
     SharedPreferences preferences;
     ActionBar bar;
     View warnLayout;
+    ListView schedulerListView;
+    boolean isScrolled = false,
+            isSearchShown = false;
+
 //vars>
 
     //<functions
@@ -160,6 +165,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 schedulerAddDialog.show(getFragmentManager(), "schedulerAddDialog");
                 return true;
             case R.id.search_item:
+                isSearchShown = true;
                 bar = getActivity().getActionBar();
                 assert bar != null;
                 bar.setDisplayShowCustomEnabled(true);
@@ -168,7 +174,26 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
                 View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                 searchLayout.startAnimation(show);
-                warnLayout.setVisibility(View.GONE);
+                if (!isScrolled) {
+                    Animation hideBalance = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
+                    hideBalance.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            warnLayout.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    warnLayout.startAnimation(hideBalance);
+                }
 
                 //<search
                 final EditText searchText = (EditText) bar.getCustomView().findViewById(R.id.searchText);
@@ -199,6 +224,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                 clearButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        isSearchShown = false;
                         Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                         View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                         hide.setAnimationListener(new Animation.AnimationListener() {
@@ -207,7 +233,26 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                                 searchText.clearFocus();
                                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
-                                warnLayout.setVisibility(View.VISIBLE);
+                                if (!isScrolled) {
+                                    Animation showBalance = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
+                                    showBalance.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+                                            warnLayout.setVisibility(View.VISIBLE);
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+
+                                        }
+                                    });
+                                    warnLayout.startAnimation(showBalance);
+                                }
                             }
 
                             @Override
@@ -371,7 +416,7 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         //card filter>
 
         //<list view
-        ListView schedulerListView = (ListView) v.findViewById(R.id.schedulerListView);
+        schedulerListView = (ListView) v.findViewById(R.id.schedulerListView);
         String[] from = new String[]{"datetime", "paymentdetails", "card", "amount", "calculatedbalance"};
         int[] to = new int[]{R.id.lvDateTime, R.id.lvDetails, R.id.lvCard, R.id.lvAmount, R.id.lvBalance};
         scAdapter = new SchedulerSimpleCursorAdapter(getActivity(), R.layout.list_item, null, from, to, 0);
@@ -415,6 +460,62 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         });
         schedulerListView.setAdapter(scAdapter);
         registerForContextMenu(schedulerListView);
+
+        schedulerListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+                Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
+                Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
+                show.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        warnLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                hide.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        warnLayout.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+                isScrolled = i > 1;
+                if (!isSearchShown) {
+                    if (i == 2 & warnLayout.getVisibility() != View.GONE) {
+                        warnLayout.startAnimation(hide);
+                    }
+                    if (i == 0 & warnLayout.getVisibility() != View.VISIBLE) {
+                        warnLayout.startAnimation(show);
+                    }
+                }
+            }
+        });
+
         getLoaderManager().initLoader(1, null, this);
 
         schedulerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

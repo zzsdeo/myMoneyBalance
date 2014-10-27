@@ -96,7 +96,24 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                 searchLayout.startAnimation(show);
                 if (!isScrolled) {
-                    balanceLayout.setVisibility(View.GONE);
+                    Animation hideBalance = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
+                    hideBalance.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            balanceLayout.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    balanceLayout.startAnimation(hideBalance);
                 }
 
                 //<search
@@ -128,17 +145,34 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 clearButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        isSearchShown = false;
                         Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                         View searchLayout = bar.getCustomView().findViewById(R.id.searchLayout);
                         hide.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
-                                isSearchShown = false;
                                 searchText.clearFocus();
                                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
                                 if (!isScrolled) {
-                                    balanceLayout.setVisibility(View.VISIBLE);
+                                    Animation showBalance = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
+                                    showBalance.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+                                            balanceLayout.setVisibility(View.VISIBLE);
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+
+                                        }
+                                    });
+                                    balanceLayout.startAnimation(showBalance);
                                 }
                             }
 
@@ -295,8 +329,6 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         transactionsListView.setAdapter(scAdapter);
         registerForContextMenu(transactionsListView);
 
-
-
         transactionsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -310,12 +342,12 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 show.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
+                        balanceLayout.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        balanceLayout.setVisibility(View.VISIBLE);
+
                     }
 
                     @Override
@@ -339,27 +371,20 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
                     }
                 });
+
+                isScrolled = i > 1;
                 if (!isSearchShown) {
                     if (i == 2 & balanceLayout.getVisibility() != View.GONE) {
                         balanceLayout.startAnimation(hide);
-                        isScrolled = true;
                     }
                     if (i == 0 & balanceLayout.getVisibility() != View.VISIBLE) {
                         balanceLayout.startAnimation(show);
-                        isScrolled = false;
                     }
                 }
             }
         });
 
-
-
-
-
-
-
         getLoaderManager().initLoader(0, null, this);
-
         transactionsListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
