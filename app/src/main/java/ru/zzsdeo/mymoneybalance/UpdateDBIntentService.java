@@ -5,19 +5,33 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateFormat;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.Calendar;
 
 public class UpdateDBIntentService extends IntentService {
 
-    private static final Long END_OF_TIME = 1451520000000L;
+    private static final Long END_OF_TIME = 1609459200000L;
     private Calendar today = Calendar.getInstance();
     public static final String UPDATE_RESULT = "ru.zzsdeo.mymoneybalance.updatedbintentservice.OK";
+    private Handler handler;
 
     public UpdateDBIntentService() {
         super("UpdateDBIntentService");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handler = new Handler();
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -212,6 +226,11 @@ public class UpdateDBIntentService extends IntentService {
             i.putExtra("db", "mytable");
         }
 
+        if (intent.getStringExtra("db").equals("exportdb")) {
+            i.putExtra("db", "");
+            exportDB();
+        }
+
         DatabaseManager.getInstance().closeDatabase();
         broadcaster.sendBroadcast(i);
     }
@@ -241,6 +260,42 @@ public class UpdateDBIntentService extends IntentService {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
+        }
+    }
+
+
+    //export
+    private void exportDB () {
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String currentDBPath = "//data//" + "ru.zzsdeo.mymoneybalance"
+                        + "//databases//" + "myDB";
+                String backupDBPath = "/MyMoneyBalance/database/myDB";
+                File currentDB = new File(data, currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "База данных успешно экспортирована", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        } catch (final Exception e) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Ошибка!\n" + e.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 }

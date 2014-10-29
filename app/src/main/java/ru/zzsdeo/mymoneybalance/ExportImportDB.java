@@ -3,6 +3,7 @@ package ru.zzsdeo.mymoneybalance;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
@@ -71,6 +72,7 @@ public class ExportImportDB extends Activity {
             File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
+                DatabaseManager.getInstance().closeDatabase();
                 String currentDBPath = "//data//" + "ru.zzsdeo.mymoneybalance"
                         + "//databases//" + "myDB";
                 String backupDBPath = "/MyMoneyBalance/database/myDB";
@@ -96,33 +98,11 @@ public class ExportImportDB extends Activity {
 
     //exporting database
     void exportDB() {
-
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                String currentDBPath = "//data//" + "ru.zzsdeo.mymoneybalance"
-                        + "//databases//" + "myDB";
-                String backupDBPath = "/MyMoneyBalance/database/myDB";
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-                Toast.makeText(getBaseContext(), "База данных успешно экспортирована",
-                        Toast.LENGTH_LONG).show();
-                btnExportDB.setEnabled(false);
-            }
-        } catch (Exception e) {
-
-            Toast.makeText(getBaseContext(), "Ошибка!/n" + e.toString(), Toast.LENGTH_LONG)
-                    .show();
-
-        }
+        Bundle args = new Bundle();
+        args.putString("db", "exportdb");
+        Intent i = new Intent(this, UpdateDBIntentService.class);
+        startService(i.putExtras(args));
+        btnExportDB.setEnabled(false);
     }
 
     @Override
