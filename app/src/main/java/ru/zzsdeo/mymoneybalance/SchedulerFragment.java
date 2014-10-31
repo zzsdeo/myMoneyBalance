@@ -460,17 +460,10 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
         });
         schedulerListView.setAdapter(scAdapter);
         registerForContextMenu(schedulerListView);
-
         schedulerListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
                 Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
-                Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                 show.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -487,6 +480,17 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
 
                     }
                 });
+
+                if (!isSearchShown) {
+                    if (absListView.getFirstVisiblePosition() < 1 & warnLayout.getVisibility() != View.VISIBLE) {
+                        warnLayout.startAnimation(show);
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+                Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                 hide.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -504,13 +508,10 @@ public class SchedulerFragment extends Fragment implements LoaderCallbacks<Curso
                     }
                 });
 
-                isScrolled = i > 1;
+                isScrolled = i > 0;
                 if (!isSearchShown) {
-                    if (i == 2 & warnLayout.getVisibility() != View.GONE) {
+                    if (i == 1 & warnLayout.getVisibility() != View.GONE) {
                         warnLayout.startAnimation(hide);
-                    }
-                    if (i == 0 & warnLayout.getVisibility() != View.VISIBLE) {
-                        warnLayout.startAnimation(show);
                     }
                 }
             }

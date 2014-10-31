@@ -328,17 +328,10 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
         });
         transactionsListView.setAdapter(scAdapter);
         registerForContextMenu(transactionsListView);
-
         transactionsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
                 Animation show = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_show);
-                Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                 show.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -355,6 +348,17 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
                     }
                 });
+
+                if (!isSearchShown) {
+                    if (absListView.getFirstVisiblePosition() < 1 & balanceLayout.getVisibility() != View.VISIBLE) {
+                        balanceLayout.startAnimation(show);
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+                Animation hide = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
                 hide.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -372,13 +376,10 @@ public class MainFragment extends Fragment implements LoaderCallbacks<Cursor> {
                     }
                 });
 
-                isScrolled = i > 1;
+                isScrolled = i > 0;
                 if (!isSearchShown) {
-                    if (i == 2 & balanceLayout.getVisibility() != View.GONE) {
+                    if (i == 1 & balanceLayout.getVisibility() != View.GONE) {
                         balanceLayout.startAnimation(hide);
-                    }
-                    if (i == 0 & balanceLayout.getVisibility() != View.VISIBLE) {
-                        balanceLayout.startAnimation(show);
                     }
                 }
             }
